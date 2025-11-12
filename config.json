@@ -1,0 +1,12 @@
+{
+  "app_name": "NutriRumiantes",
+  "version": "1.0.0",
+  "description": "Plataforma Integral de Nutrición Ganadera",
+  "language": "es",
+  "author": "Desarrollo de Software",
+  "settings": {
+    "default_species": "bovinos",
+    "currency": "MXN",
+    "decimal_places": 2
+  }
+}
