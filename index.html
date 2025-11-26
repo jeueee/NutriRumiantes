@@ -3,18 +3,274 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🌿 Folia Scan Web</title>
-    <!-- Tailwind CSS CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
+    <title>🌿 Folia Scan Web - Optimizado</title>
     <!-- OpenCV.js CDN (Librería de Visión por Computadora) -->
     <script async src="https://docs.opencv.org/4.9.0/opencv.js" onload="onOpenCvReady()"></script>
     <style>
-        /* Estilo para la fuente Inter y fondo */
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: #f7f9fb;
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
-        /* Estilos específicos para las vistas de imagen/canvas */
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+            background-color: #f7f9fb;
+            color: #1f2937;
+            line-height: 1.6;
+            padding: 1rem;
+        }
+
+        @media (min-width: 768px) {
+            body {
+                padding: 2rem;
+            }
+        }
+
+        .container {
+            max-width: 1280px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            font-size: 2.25rem;
+            font-weight: 800;
+            margin-bottom: 0.5rem;
+            color: #111827;
+            display: flex;
+            align-items: center;
+        }
+
+        h1 span {
+            margin-right: 0.75rem;
+        }
+
+        h1 .text-green {
+            color: #15803d;
+        }
+
+        .subtitle {
+            color: #4b5563;
+            margin-bottom: 1.5rem;
+        }
+
+        .grid-main {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+        }
+
+        @media (min-width: 1024px) {
+            .grid-main {
+                grid-template-columns: 1fr 2fr;
+            }
+        }
+
+        .panel {
+            background-color: white;
+            padding: 1.5rem;
+            border-radius: 0.75rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            border: 1px solid #f3f4f6;
+        }
+
+        .panel h2 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+            color: #15803d;
+        }
+
+        .panel h3 {
+            font-size: 1.125rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: #374151;
+        }
+
+        .space-y-6 {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .space-y-4 {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .space-y-3 {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .space-y-2 {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .form-group.horizontal {
+            flex-direction: row;
+            align-items: center;
+        }
+
+        label {
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: #374151;
+        }
+
+        input[type="number"],
+        input[type="range"],
+        select {
+            padding: 0.5rem;
+            border: 1px solid #d1d5db;
+            border-radius: 0.375rem;
+            font-size: 0.875rem;
+            transition: all 0.15s ease;
+        }
+
+        input[type="number"],
+        select {
+            background-color: white;
+        }
+
+        input[type="number"]:focus,
+        input[type="range"]:focus,
+        select:focus {
+            outline: none;
+            border-color: #22c55e;
+            box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.1);
+        }
+
+        input[type="range"] {
+            cursor: pointer;
+            width: 100%;
+        }
+
+        input[type="number"].w-20 {
+            width: 5rem;
+            text-align: right;
+        }
+
+        select {
+            width: 100%;
+            cursor: pointer;
+        }
+
+        button {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 0.5rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            font-size: 0.875rem;
+            width: 100%;
+        }
+
+        .btn-blue {
+            background-color: #2563eb;
+            color: white;
+        }
+
+        .btn-blue:hover:not(:disabled) {
+            background-color: #1d4ed8;
+        }
+
+        .btn-blue:disabled {
+            background-color: #9ca3af;
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+
+        .btn-green {
+            background-color: #16a34a;
+            color: white;
+        }
+
+        .btn-green:hover {
+            background-color: #15803d;
+        }
+
+        .btn-indigo {
+            background-color: #4f46e5;
+            color: white;
+        }
+
+        .btn-indigo:hover {
+            background-color: #4338ca;
+        }
+
+        .btn-red {
+            background-color: #dc2626;
+            color: white;
+        }
+
+        .btn-red:hover {
+            background-color: #b91c1c;
+        }
+
+        .btn-red:disabled {
+            background-color: #9ca3af;
+            cursor: not-allowed;
+            display: none;
+        }
+
+        .btn-red.visible {
+            display: block;
+        }
+
+        .text-sm {
+            font-size: 0.875rem;
+        }
+
+        .text-xs {
+            font-size: 0.75rem;
+        }
+
+        .text-gray-500 {
+            color: #6b7280;
+        }
+
+        .text-gray-600 {
+            color: #4b5563;
+        }
+
+        .text-red-500 {
+            color: #ef4444;
+        }
+
+        .text-green-600 {
+            color: #16a34a;
+        }
+
+        .text-lg {
+            font-size: 1.125rem;
+        }
+
+        .font-medium {
+            font-weight: 500;
+        }
+
+        .font-bold {
+            font-weight: 700;
+        }
+
+        .font-semibold {
+            font-weight: 600;
+        }
+
+        /* Image Container */
         .image-container {
             min-height: 300px;
             background-color: #e2e8f0;
@@ -25,126 +281,266 @@
             overflow: hidden;
             border-radius: 0.5rem;
             position: relative;
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
         }
-        canvas, #originalImage {
+
+        canvas, #originalImage, #webcamFeed {
             max-width: 100%;
             height: auto;
-            position: absolute; /* Para que el canvas se superponga o tome el espacio */
+            position: absolute;
             top: 0;
             left: 0;
             right: 0;
             bottom: 0;
             margin: auto;
         }
-        /* Ocultar el input de archivo */
+
+        .image-container p {
+            color: #6b7280;
+            text-align: center;
+            padding: 1rem;
+            position: relative;
+            z-index: 1;
+        }
+
         #fileInput {
             display: none;
+        }
+
+        .performance-badge {
+            position: absolute;
+            top: 2px;
+            right: 2px;
+            background-color: rgba(0, 0, 0, 0.7);
+            color: #4ade80;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: bold;
+            z-index: 10;
+        }
+
+        .performance-badge.hidden {
+            display: none;
+        }
+
+        /* Grid para vistas */
+        .grid-views {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+        }
+
+        @media (min-width: 768px) {
+            .grid-views {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        .results-section {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+        }
+
+        @media (min-width: 1024px) {
+            .results-section {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .results-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        /* Modal */
+        .modal {
+            position: fixed;
+            inset: 0;
+            background-color: rgba(75, 85, 99, 0.5);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+            z-index: 50;
+        }
+
+        .modal.show {
+            display: flex;
+        }
+
+        .modal-content {
+            background-color: white;
+            border-radius: 0.5rem;
+            box-shadow: 0 20px 25px rgba(0,0,0,0.15);
+            padding: 1.5rem;
+            width: 100%;
+            max-width: 28rem;
+        }
+
+        .modal-content h3 {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: #dc2626;
+        }
+
+        .modal-content p {
+            color: #374151;
+            margin-bottom: 1.5rem;
+        }
+
+        .modal-content button {
+            margin-top: 0;
+        }
+
+        /* Status messages */
+        .status-message {
+            margin-top: 0.5rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+
+        /* Visibility utilities */
+        .hidden {
+            display: none !important;
         }
     </style>
 </head>
 <body class="p-4 md:p-8">
 
-    <div class="max-w-7xl mx-auto">
-        <h1 class="text-4xl font-extrabold mb-2 text-gray-900 flex items-center">
-            <span class="text-green-700 mr-3">🌿</span> Folia Scan Web (Tiempo Real)
+    <div class="container">
+        <h1>
+            <span class="text-green">🌿</span> Folia Scan Web (Tiempo Real - Optimizado)
         </h1>
-        <p class="text-gray-600 mb-6">Visualice los contornos de la hoja y el cuadrado en tiempo real antes de medir.</p>
+        <p class="subtitle">Visualice los contornos de la hoja en tiempo real con máximo rendimiento.</p>
 
         <!-- Contenedor Principal: Ajustes y Vistas -->
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div class="grid-main">
 
             <!-- Panel de Control y Ajustes (Columna 1) -->
-            <div class="lg:col-span-1 space-y-6">
+            <div class="space-y-6">
 
                 <!-- Área de Calibración -->
-                <div class="bg-white p-6 rounded-xl shadow-lg border border-gray-100">
-                    <h2 class="text-xl font-semibold mb-3 text-green-700">📏 Calibración de Escala</h2>
-                    <p class="text-sm text-gray-500 mb-4">Ingrese la longitud real (en cm) del cuadrado de referencia. El cuadrado debe contrastar con el fondo.</p>
+                <div class="panel">
+                    <h2>📏 Calibración de Escala</h2>
+                    <p class="text-sm text-gray-500" style="margin-bottom: 1rem;">Ingrese la longitud real (en cm) del cuadrado de referencia.</p>
                     
-                    <div class="flex items-center space-x-3 mb-4">
-                        <label for="scaleCm" class="block text-sm font-medium text-gray-700">Lado Real (cm)</label>
-                        <input type="number" id="scaleCm" value="1.0" min="0.1" step="0.1"
-                               class="mt-1 block w-20 rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500 p-2 border text-right">
+                    <div class="form-group horizontal" style="margin-bottom: 1rem;">
+                        <label for="scaleCm">Lado Real (cm)</label>
+                        <input type="number" id="scaleCm" value="1.0" min="0.1" step="0.1" class="w-20">
                     </div>
                     
-                    <button id="btnMeasure" onclick="measureFinalImage()" disabled
-                            class="w-full bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition duration-150 shadow-md disabled:bg-gray-400">
+                    <button id="btnMeasure" onclick="measureFinalImage()" disabled class="btn-blue">
                         📐 Tomar Foto y Medir
                     </button>
-                    <p id="calibrationStatus" class="mt-2 text-sm text-red-500 font-medium">Cargando OpenCV.js...</p>
+                    <p id="calibrationStatus" class="status-message text-red-500">Cargando OpenCV.js...</p>
+                </div>
+
+                <!-- Panel de Optimización (NUEVO) -->
+                <div class="panel">
+                    <h2 style="color: #4f46e5;">⚙️ Optimización</h2>
+                    
+                    <div class="space-y-4">
+                        <!-- Resolución de video -->
+                        <div class="form-group">
+                            <label for="videoResolution">Resolución Video</label>
+                            <select id="videoResolution">
+                                <option value="320">320x240 (Muy Rápido)</option>
+                                <option value="480" selected>480x360 (Rápido)</option>
+                                <option value="640">640x480 (Normal)</option>
+                                <option value="1024">1024x768 (Detalle)</option>
+                            </select>
+                        </div>
+
+                        <!-- Threshold -->
+                        <div class="form-group">
+                            <label for="thresholdSlider">
+                                Umbral Binarización: <span id="thresholdValue">100</span>
+                            </label>
+                            <input type="range" id="thresholdSlider" min="0" max="255" value="100" step="5">
+                        </div>
+
+                        <!-- Skip Frames -->
+                        <div class="form-group">
+                            <label for="skipFrames">
+                                Procesar 1 de cada <span id="skipFramesValue">1</span> frames
+                            </label>
+                            <input type="range" id="skipFrames" min="1" max="5" value="1" step="1">
+                        </div>
+                    </div>
                 </div>
 
                 <!-- Panel de Carga de Imagen -->
-                <div class="bg-white p-6 rounded-xl shadow-lg border border-gray-100">
-                    <h2 class="text-xl font-semibold mb-3 text-green-700">📸 Opciones de Entrada</h2>
+                <div class="panel">
+                    <h2>📸 Opciones de Entrada</h2>
                     <div class="space-y-3">
-                        <button onclick="document.getElementById('fileInput').click()"
-                                class="w-full bg-green-600 text-white py-2 px-4 rounded-lg hover:bg-green-700 transition duration-150 shadow-md">
+                        <button onclick="document.getElementById('fileInput').click()" class="btn-green">
                             Subir Imagen Local
                         </button>
                         <input type="file" id="fileInput" accept="image/*" onchange="handleFile(event)">
                         
-                        <button id="btnCamera" onclick="startCamera()"
-                                class="w-full bg-indigo-600 text-white py-2 px-4 rounded-lg hover:bg-indigo-700 transition duration-150 shadow-md">
-                            Iniciar Cámara y Streaming CV
+                        <button id="btnCamera" onclick="startCamera()" class="btn-indigo">
+                            Iniciar Cámara
                         </button>
-                        <button id="btnStopCamera" onclick="stopCamera()" disabled
-                                class="w-full bg-red-600 text-white py-2 px-4 rounded-lg hover:bg-red-700 transition duration-150 shadow-md hidden">
+                        <button id="btnStopCamera" onclick="stopCamera()" disabled class="btn-red">
                             Detener Cámara
                         </button>
-                        <p class="text-xs text-gray-500 mt-2">Al iniciar la cámara, el procesamiento se activa en el visor de resultados.</p>
                     </div>
                 </div>
             </div>
             
-            <!-- Vistas y Resultados (Columnas 2 & 3) -->
-            <div class="lg:col-span-2 space-y-6">
+            <!-- Vistas y Resultados (Columna 2) -->
+            <div class="results-section">
                 <!-- Visores de Imagen -->
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="grid-views">
                     <!-- Vista de la Cámara/Original (Video) -->
                     <div>
-                        <h3 class="text-lg font-semibold mb-2 text-gray-700">Fuente de Entrada (Cámara/Imagen)</h3>
+                        <h3>Fuente de Entrada</h3>
                         <div class="image-container">
-                            <!-- El video feed y la imagen se muestran aquí -->
                             <video id="webcamFeed" class="hidden" autoplay playsinline></video>
                             <img id="originalImage" class="hidden" alt="Imagen Original">
-                            <p id="placeholderText" class="text-gray-500 text-center p-4">Cargue una imagen o inicie la cámara.</p>
+                            <p id="placeholderText">Cargue una imagen o inicie la cámara.</p>
                         </div>
                     </div>
 
                     <!-- Vista Procesada (Canvas con Contornos en Tiempo Real) -->
                     <div>
-                        <h3 class="text-lg font-semibold mb-2 text-gray-700">Visualización de Contornos (Real Time)</h3>
+                        <h3>Detección en Tiempo Real</h3>
                         <div class="image-container">
-                            <!-- El canvas para el procesamiento en vivo -->
                             <canvas id="processedCanvas" class="hidden"></canvas>
-                            <p id="canvasPlaceholder" class="text-gray-500 text-center p-4">Aquí se mostrará el modelo de CV.</p>
+                            <div id="fpsCounter" class="performance-badge hidden">60 FPS</div>
+                            <p id="canvasPlaceholder">Aquí se mostrará el procesamiento en vivo.</p>
                         </div>
                     </div>
                 </div>
 
                 <!-- Resultados de Medición -->
-                <div class="bg-white p-6 rounded-xl shadow-lg border border-gray-100">
-                    <h2 class="text-xl font-semibold mb-3 text-green-700">📊 Resultados de la Medición Final</h2>
-                    <div id="results" class="space-y-2 text-gray-700">
+                <div class="panel">
+                    <h2>📊 Resultados de la Medición Final</h2>
+                    <div id="results" class="results-grid">
                         <p id="areaResult" class="text-lg font-medium">Área de la Hoja: <span class="font-bold text-gray-500">N/A</span></p>
                         <p id="perimeterResult" class="text-lg font-medium">Perímetro de la Hoja: <span class="font-bold text-gray-500">N/A</span></p>
                         <p id="lengthResult" class="text-lg font-medium">Largo Máximo (L): <span class="font-bold text-gray-500">N/A</span></p>
                         <p id="widthResult" class="text-lg font-medium">Ancho Máximo (A): <span class="font-bold text-gray-500">N/A</span></p>
                         <p id="pixelCm" class="text-sm">Escala (Píxeles/cm): <span class="font-bold text-gray-500">N/A</span></p>
-                        <p id="processingTime" class="text-sm">Tiempo de Proceso (última medición): <span class="font-bold text-gray-500">N/A</span></p>
+                        <p id="processingTime" class="text-sm">Tiempo de Proceso: <span class="font-bold text-gray-500">N/A</span></p>
                     </div>
                 </div>
                 
             </div>
         </div>
     </div>
-    <!-- Modal de Alerta (Reemplazo de alert()) -->
-    <div id="alertModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden items-center justify-center p-4 z-50">
-        <div class="bg-white rounded-lg shadow-2xl p-6 w-full max-w-sm">
-            <h3 class="text-xl font-bold mb-4 text-red-600">Alerta del Sistema</h3>
-            <p id="alertMessage" class="text-gray-700 mb-6"></p>
-            <button onclick="closeAlertModal()" class="w-full bg-red-600 text-white py-2 rounded-lg hover:bg-red-700 transition">Cerrar</button>
+    <!-- Modal de Alerta -->
+    <div id="alertModal" class="modal">
+        <div class="modal-content">
+            <h3>Alerta del Sistema</h3>
+            <p id="alertMessage"></p>
+            <button onclick="closeAlertModal()" class="btn-red">Cerrar</button>
         </div>
     </div>
 
@@ -156,15 +552,17 @@
             SQUARE_ASPECT_RATIO_MIN: 0.85,
             SQUARE_ASPECT_RATIO_MAX: 1.15,
             MIN_CONTOUR_AREA_PX: 1000,
-            THRESHOLD_VALUE: 100, // Valor de binarización inicial
         };
 
         let imageBase64 = null; 
         let stream = null;      
         let pixelsPerCm = null; 
         let cvReady = false; 
-        let streaming = false; // Nueva bandera para el loop de streaming
-        let lastFrame = null; // Para almacenar el último frame para la medición
+        let streaming = false;
+        let lastFrame = null;
+        let frameCounter = 0;
+        let fpsCounter = 0;
+        let lastFpsTime = Date.now();
 
         const $ = (id) => document.getElementById(id);
         const elements = {
@@ -172,7 +570,7 @@
             processedCanvas: $('processedCanvas'),
             webcamFeed: $('webcamFeed'),
             placeholderText: $('placeholderText'),
-            btnMeasure: $('btnMeasure'), // Renombrado de btnCalibrate
+            btnMeasure: $('btnMeasure'),
             btnCamera: $('btnCamera'),
             btnStopCamera: $('btnStopCamera'),
             scaleCm: $('scaleCm'),
@@ -185,8 +583,23 @@
             processingTime: $('processingTime').querySelector('span'),
             alertModal: $('alertModal'),
             alertMessage: $('alertMessage'),
-            canvasPlaceholder: $('canvasPlaceholder')
+            canvasPlaceholder: $('canvasPlaceholder'),
+            thresholdSlider: $('thresholdSlider'),
+            thresholdValue: $('thresholdValue'),
+            skipFrames: $('skipFrames'),
+            skipFramesValue: $('skipFramesValue'),
+            videoResolution: $('videoResolution'),
+            fpsCounter: $('fpsCounter')
         };
+
+        // Inicializar listeners de optimización
+        elements.thresholdSlider.addEventListener('input', (e) => {
+            elements.thresholdValue.textContent = e.target.value;
+        });
+
+        elements.skipFrames.addEventListener('input', (e) => {
+            elements.skipFramesValue.textContent = e.target.value;
+        });
 
         /**
          * Maneja el mensaje de carga de OpenCV.js
@@ -206,30 +619,40 @@
         /** Muestra un modal de alerta personalizado */
         function showAlertModal(message) {
             elements.alertMessage.textContent = message;
-            elements.alertModal.classList.remove('hidden');
-            elements.alertModal.classList.add('flex');
+            elements.alertModal.classList.add('show');
         }
 
         /** Cierra el modal de alerta. */
         function closeAlertModal() {
-            elements.alertModal.classList.add('hidden');
-            elements.alertModal.classList.remove('flex');
+            elements.alertModal.classList.remove('show');
+        }
+
+        /**
+         * Actualiza el contador de FPS
+         */
+        function updateFpsCounter() {
+            fpsCounter++;
+            const now = Date.now();
+            const elapsed = now - lastFpsTime;
+            
+            if (elapsed >= 1000) {
+                const fps = Math.round(fpsCounter * 1000 / elapsed);
+                elements.fpsCounter.textContent = `${fps} FPS`;
+                fpsCounter = 0;
+                lastFpsTime = now;
+            }
         }
 
         /**
          * Inicializa la imagen y el canvas de resultados.
-         * @param {cv.Mat} srcMat - La Mat de OpenCV que contiene el frame o imagen.
-         * @returns {HTMLCanvasElement} El canvas temporal para el procesamiento.
          */
         function initializeCanvas(srcMat) {
-            // Ajustar el tamaño del canvas de procesamiento al tamaño de la imagen/video
             const width = srcMat.cols;
             const height = srcMat.rows;
             
             elements.processedCanvas.width = width;
             elements.processedCanvas.height = height;
             
-            // También ajustamos el video/imagen original para que se muestre correctamente
             elements.webcamFeed.style.width = width + 'px';
             elements.webcamFeed.style.height = height + 'px';
             elements.originalImage.style.width = width + 'px';
@@ -238,17 +661,12 @@
             return elements.processedCanvas;
         }
 
-
         // =======================================================
         // FUNCIÓN CENTRAL DE VISIÓN POR COMPUTADORA (OpenCV.js)
         // =======================================================
 
         /**
-         * Realiza el procesamiento de imagen, detección de contornos, calibración y medición.
-         * @param {cv.Mat} src - La Mat de OpenCV que contiene el frame o imagen.
-         * @param {HTMLCanvasElement} canvasOutput - El canvas donde dibujar el resultado.
-         * @param {boolean} calculateMetrics - Si se deben calcular las métricas finales (Área, Perímetro, etc.)
-         * @returns {Object|null} - {areaCm2, perimeterCm, lengthCm, widthCm, calibrationSuccess}
+         * Realiza el procesamiento de imagen con máxima eficiencia
          */
         function processImage(src, canvasOutput, calculateMetrics = false) {
             
@@ -257,14 +675,16 @@
             let binary = null;
             let contours = null;
             let hierarchy = null;
-            let dst = null; // Destination Mat for drawing
+            let dst = null;
 
             try {
+                const thresholdValue = parseInt(elements.thresholdSlider.value);
+                
                 // Preprocesamiento (Escala de grises y Binarización)
                 gray = new cv.Mat();
                 binary = new cv.Mat();
                 cv.cvtColor(src, gray, cv.COLOR_RGBA2GRAY, 0);
-                cv.threshold(gray, binary, Config.THRESHOLD_VALUE, 255, cv.THRESH_BINARY_INV);
+                cv.threshold(gray, binary, thresholdValue, 255, cv.THRESH_BINARY_INV);
                 
                 // Encontrar Contornos
                 contours = new cv.MatVector();
@@ -275,7 +695,7 @@
                 let leafContour = null;
                 let maxArea = 0;
 
-                // Filtrar y clasificar Contornos (Calibración y Hoja)
+                // Filtrar y clasificar Contornos
                 for (let i = 0; i < contours.size(); ++i) {
                     let contour = contours.get(i);
                     let area = cv.contourArea(contour);
@@ -286,7 +706,7 @@
                     let approx = new cv.Mat();
                     cv.approxPolyDP(contour, approx, 0.04 * perimeter, true);
                     
-                    // Solo si tiene 4 esquinas (candidato a cuadrado/referencia)
+                    // Detectar cuadrado de calibración
                     if (approx.rows === 4) {
                         let rect = cv.boundingRect(contour);
                         let aspectRatio = rect.width / rect.height;
@@ -296,9 +716,8 @@
                         }
                     }
 
-                    // El contorno más grande que no es el cuadrado es la hoja
+                    // Detectar hoja (contorno más grande)
                     if (area > maxArea) {
-                        // Evitar que el contorno del cuadrado sea la hoja (si ya fue detectado como cuadrado)
                         if (!referenceSquareContour || !contour.isEqual(referenceSquareContour)) {
                             maxArea = area;
                             leafContour = contour;
@@ -313,11 +732,11 @@
                 let lengthCm = 0;
                 let widthCm = 0;
 
-                // 1. CÁLCULO DE ESCALA
+                // CÁLCULO DE ESCALA
                 if (referenceSquareContour) {
                     const rect = cv.minAreaRect(referenceSquareContour);
                     const size = rect.size;
-                    const sidePx = (size.width + size.height) / 2; // Promedio de los lados del minAreaRect
+                    const sidePx = (size.width + size.height) / 2;
                     
                     const realSideCm = parseFloat(elements.scaleCm.value);
                     pixelsPerCm = sidePx / realSideCm;
@@ -325,75 +744,71 @@
                     
                     if (calculateMetrics) {
                         elements.pixelCm.textContent = `${pixelsPerCm.toFixed(2)} px/cm`;
-                        elements.calibrationStatus.textContent = `✅ Escala calibrada: ${pixelsPerCm.toFixed(2)} px/cm.`;
+                        elements.calibrationStatus.textContent = `✅ Escala: ${pixelsPerCm.toFixed(2)} px/cm`;
                         elements.calibrationStatus.classList.remove('text-red-500');
                         elements.calibrationStatus.classList.add('text-green-600');
                     }
                 } else if (calculateMetrics) {
                     pixelsPerCm = null;
-                    elements.calibrationStatus.textContent = `❌ No se detectó un cuadrado de escala válido.`;
+                    elements.calibrationStatus.textContent = `❌ Cuadrado de escala no detectado`;
                     elements.calibrationStatus.classList.remove('text-green-600');
                     elements.calibrationStatus.classList.add('text-red-500');
                 }
 
-                // 2. MEDICIÓN Y DIBUJO
-                dst = src.clone(); // Clone the source image for drawing
+                // DIBUJO Y MEDICIÓN
+                dst = src.clone();
 
                 if (leafContour && calibrationSuccess && pixelsPerCm) {
                     // Dibujar contorno de la hoja (rojo)
                     cv.drawContours(dst, new cv.MatVector(leafContour), 0, [255, 0, 0, 255], 3);
 
                     if (calculateMetrics) {
-                        // Área y Perímetro
                         const areaPx = cv.contourArea(leafContour);
                         const perimeterPx = cv.arcLength(leafContour, true);
 
                         areaCm2 = areaPx / (pixelsPerCm * pixelsPerCm);
                         perimeterCm = perimeterPx / pixelsPerCm;
 
-                        // Largo y Ancho (Usando Bounding Box de Área Mínima)
                         const minRect = cv.minAreaRect(leafContour);
                         const size = minRect.size;
-                        const size1Px = size.width;
-                        const size2Px = size.height;
                         
-                        lengthCm = Math.max(size1Px, size2Px) / pixelsPerCm;
-                        widthCm = Math.min(size1Px, size2Px) / pixelsPerCm;
+                        lengthCm = Math.max(size.width, size.height) / pixelsPerCm;
+                        widthCm = Math.min(size.width, size.height) / pixelsPerCm;
                         
-                        // Dibujar el Bounding Box de la hoja (rectángulo rotado, amarillo)
+                        // Dibujar bounding box (amarillo)
                         let vertices = cv.boxPoints(minRect);
-                        let corners = cv.matFromArray(4, 1, cv.CV_32FC2, [vertices.data32F[0], vertices.data32F[1], vertices.data32F[2], vertices.data32F[3], vertices.data32F[4], vertices.data32F[5], vertices.data32F[6], vertices.data32F[7]]);
+                        let corners = cv.matFromArray(4, 1, cv.CV_32FC2, [
+                            vertices.data32F[0], vertices.data32F[1],
+                            vertices.data32F[2], vertices.data32F[3],
+                            vertices.data32F[4], vertices.data32F[5],
+                            vertices.data32F[6], vertices.data32F[7]
+                        ]);
                         cv.polylines(dst, [corners], true, [255, 255, 0, 255], 2, cv.LINE_AA);
                         corners.delete();
                     }
                 }
                 
-                // Dibujar contorno del cuadrado (verde)
+                // Dibujar cuadrado de referencia (verde)
                 if (referenceSquareContour) {
                     cv.drawContours(dst, new cv.MatVector(referenceSquareContour), 0, [0, 255, 0, 255], 3);
                 }
 
-                // Mostrar el resultado en el canvas
                 cv.imshow(canvasOutput, dst);
 
                 const endTime = performance.now();
-                const processingTime = (endTime - startTime).toFixed(2);
                 if (calculateMetrics) {
-                    elements.processingTime.textContent = `${processingTime} ms`;
+                    elements.processingTime.textContent = `${(endTime - startTime).toFixed(2)} ms`;
                 }
 
                 return { areaCm2, perimeterCm, lengthCm, widthCm, calibrationSuccess };
 
             } catch (e) {
-                // En el loop de streaming, simplemente ignoramos frames con errores
-                // En la medición final, mostramos la alerta
                 if (calculateMetrics) {
-                    console.error("Error en el procesamiento de OpenCV:", e);
-                    showAlertModal("Error de Visión por Computadora: " + e.message);
+                    console.error("Error en CV:", e);
+                    showAlertModal("Error: " + e.message);
                 }
                 return null;
             } finally {
-                // Liberar memoria de OpenCV
                 if (gray) gray.delete();
                 if (binary) binary.delete();
                 if (contours) contours.delete();
@@ -403,12 +818,12 @@
         }
 
         /**
-         * Función principal para medir la imagen final (tomar foto o imagen cargada).
+         * Función principal para medir la imagen final
          */
         function measureFinalImage() {
             if (!cvReady) { showAlertModal("OpenCV.js aún no está cargado."); return; }
+            
             if (streaming) {
-                 // Capturar frame del video
                 const video = elements.webcamFeed;
                 const canvas = document.createElement('canvas');
                 canvas.width = video.videoWidth;
@@ -416,9 +831,7 @@
                 const ctx = canvas.getContext('2d');
                 ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
                 
-                // lastFrame ya debe tener el Mat correcto
                 stopCamera();
-                // Mostramos la imagen capturada en el panel original
                 elements.originalImage.src = canvas.toDataURL('image/jpeg');
                 elements.originalImage.classList.remove('hidden');
                 elements.webcamFeed.classList.add('hidden');
@@ -435,12 +848,10 @@
                 return;
             }
 
-            // Usamos el último frame capturado (si viene de la cámara) o cargamos la imagen.
             let src = null;
             if (lastFrame) {
                 src = lastFrame.clone();
             } else {
-                 // Cargar Mat de la imagen cargada
                 const imgElement = elements.originalImage;
                 src = cv.imread(imgElement);
             }
@@ -448,8 +859,9 @@
             initializeCanvas(src);
             elements.canvasPlaceholder.classList.add('hidden');
             elements.processedCanvas.classList.remove('hidden');
+            elements.fpsCounter.classList.add('hidden');
 
-            const result = processImage(src, elements.processedCanvas, true); // true para calcular métricas
+            const result = processImage(src, elements.processedCanvas, true);
 
             if (result && result.calibrationSuccess) {
                 elements.areaResult.textContent = `${result.areaCm2.toFixed(2)} cm²`;
@@ -467,38 +879,50 @@
         }
         
         // =======================================================
-        // CÁMARA Y STREAMING CV
+        // CÁMARA Y STREAMING CV OPTIMIZADO
         // =======================================================
         
-        let videoCap = null; // Para la captura del video en el loop
+        let videoCap = null;
 
         /**
-         * Loop principal de procesamiento en tiempo real.
+         * Loop principal de procesamiento en tiempo real (OPTIMIZADO)
          */
         function processVideo() {
             if (!streaming || !cvReady) {
                 return;
             }
 
-            let src = new cv.Mat(elements.webcamFeed.videoHeight, elements.webcamFeed.videoWidth, cv.CV_8UC4);
-            videoCap.read(src); // Capturar frame del video
+            // Control de skip frames para optimizar rendimiento
+            const skipFramesValue = parseInt(elements.skipFrames.value);
+            frameCounter++;
 
-            initializeCanvas(src); // Asegura que el canvas de salida tenga el tamaño correcto
+            if (frameCounter % skipFramesValue !== 0) {
+                updateFpsCounter();
+                requestAnimationFrame(processVideo);
+                return;
+            }
+
+            let src = new cv.Mat(elements.webcamFeed.videoHeight, elements.webcamFeed.videoWidth, cv.CV_8UC4);
             
-            // Ejecutar el procesamiento de CV (sin calcular métricas finales, solo visualización)
-            const result = processImage(src, elements.processedCanvas, false); 
+            try {
+                videoCap.read(src);
+                initializeCanvas(src);
+                
+                const result = processImage(src, elements.processedCanvas, false);
+                
+                if (lastFrame) lastFrame.delete();
+                lastFrame = src.clone();
+                
+                updateFpsCounter();
+            } finally {
+                src.delete();
+            }
             
-            // Guardar el frame actual para la medición final
-            if (lastFrame) lastFrame.delete();
-            lastFrame = src.clone();
-            src.delete();
-            
-            // Repetir el loop
             requestAnimationFrame(processVideo);
         }
 
         /**
-         * Inicia el flujo de la cámara web y el loop de procesamiento en tiempo real.
+         * Inicia el flujo de la cámara web con resolución optimizada
          */
         async function startCamera() {
             if (!cvReady) {
@@ -507,49 +931,53 @@
             }
 
             try {
-                // 1. Ocultar imagen y mostrar video
                 elements.originalImage.classList.add('hidden');
                 elements.webcamFeed.classList.remove('hidden');
                 elements.placeholderText.classList.add('hidden');
                 elements.canvasPlaceholder.classList.add('hidden');
                 elements.processedCanvas.classList.remove('hidden');
+                elements.fpsCounter.classList.remove('hidden');
 
-                // 2. Iniciar el stream de video
+                const resolution = parseInt(elements.videoResolution.value);
+                const resolutionMap = {
+                    320: { width: { ideal: 320 }, height: { ideal: 240 } },
+                    480: { width: { ideal: 480 }, height: { ideal: 360 } },
+                    640: { width: { ideal: 640 }, height: { ideal: 480 } },
+                    1024: { width: { ideal: 1024 }, height: { ideal: 768 } }
+                };
+
                 stream = await navigator.mediaDevices.getUserMedia({ 
                     video: { 
-                        facingMode: "environment", // Preferir la cámara trasera en móvil
-                        width: { ideal: 640 }, // Reducir resolución para mejor rendimiento
-                        height: { ideal: 480 }
+                        facingMode: "environment",
+                        ...resolutionMap[resolution]
                     } 
                 });
+                
                 elements.webcamFeed.srcObject = stream;
                 
-                // 3. Esperar a que el video esté cargado antes de iniciar OpenCV
                 elements.webcamFeed.onloadedmetadata = () => {
-                    // Inicializar el objeto VideoCapture de OpenCV.js
                     if (videoCap) videoCap.delete();
                     videoCap = new cv.VideoCapture(elements.webcamFeed);
                     
-                    // 4. Iniciar el loop de procesamiento en tiempo real
                     streaming = true;
+                    frameCounter = 0;
                     requestAnimationFrame(processVideo);
                 };
-                
 
-                // 5. Actualizar UI
                 elements.btnCamera.classList.add('hidden');
                 elements.btnStopCamera.classList.remove('hidden');
+                elements.btnStopCamera.classList.add('visible');
                 elements.btnMeasure.disabled = false;
 
             } catch (err) {
-                showAlertModal("Error al acceder a la cámara. Asegúrese de tener permisos y una cámara conectada.");
-                console.error("Error al acceder a la cámara: ", err);
+                showAlertModal("Error al acceder a la cámara. Verifica permisos y conexión.");
+                console.error("Error: ", err);
                 stopCamera();
             }
         }
 
         /**
-         * Detiene el flujo de la cámara web y el loop de procesamiento.
+         * Detiene el flujo de la cámara web
          */
         function stopCamera() {
             streaming = false;
@@ -564,9 +992,11 @@
             elements.placeholderText.classList.remove('hidden');
             elements.canvasPlaceholder.classList.remove('hidden');
             elements.processedCanvas.classList.add('hidden');
+            elements.fpsCounter.classList.add('hidden');
 
             elements.btnCamera.classList.remove('hidden');
             elements.btnStopCamera.classList.add('hidden');
+            elements.btnStopCamera.classList.remove('visible');
             elements.btnMeasure.disabled = true;
         }
 
@@ -575,10 +1005,10 @@
         // =======================================================
 
         /**
-         * Carga una imagen del disco y la muestra en el visor.
+         * Carga una imagen del disco
          */
         function handleFile(event) {
-            stopCamera(); // Detener el stream si está activo
+            stopCamera();
 
             const file = event.target.files[0];
             if (!file) return;
@@ -593,16 +1023,16 @@
         }
 
         /**
-         * Muestra la imagen cargada en el elemento de imagen original y limpia resultados.
+         * Muestra la imagen cargada
          */
         function displayImage(base64Data) {
             elements.placeholderText.classList.add('hidden');
             elements.originalImage.src = base64Data;
             elements.originalImage.classList.remove('hidden');
 
-            // Limpiar canvas anterior
             elements.processedCanvas.classList.add('hidden');
             elements.canvasPlaceholder.classList.remove('hidden');
+            elements.fpsCounter.classList.add('hidden');
 
             elements.areaResult.textContent = "N/A";
             elements.perimeterResult.textContent = "N/A";
