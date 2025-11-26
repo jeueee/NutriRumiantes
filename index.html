@@ -6,30 +6,126 @@
     <title>📷 Contorno en Tiempo Real - Visión General</title>
     <script async src="https://docs.opencv.org/4.9.0/opencv.js" onload="onOpenCvReady()"></script>
     <style>
-        /* CSS se mantiene sin cambios para la apariencia */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+        /* ======================================================= */
+        /* OPTIMIZACIÓN SIN SCROLL (Viewport Height Layout) */
+        /* ======================================================= */
+        html, body {
+            height: 100%; /* Ocupa el 100% de la altura de la ventana */
+            overflow: hidden; /* EVITA EL SCROLL GLOBAL */
         }
-
+        
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
             background-color: #f7f9fb;
             color: #1f2937;
             line-height: 1.6;
             padding: 1rem;
+            display: flex; /* Hace del body un contenedor flex */
+            flex-direction: column; /* Apila los elementos verticalmente */
         }
 
         @media (min-width: 768px) {
             body {
-                padding: 2rem;
+                padding: 1.5rem; /* Reducir padding para más espacio */
             }
         }
 
         .container {
             max-width: 1280px;
             margin: 0 auto;
+            flex-grow: 1; /* Hace que el contenedor tome el espacio vertical restante */
+            display: flex;
+            flex-direction: column;
+            overflow: hidden; /* Esconde el posible overflow interno */
+        }
+        
+        /* Grid principal: distribuye el espacio horizontal y vertical */
+        .grid-main {
+            flex-grow: 1; /* Toma todo el espacio vertical debajo del encabezado */
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+            overflow: hidden;
+            padding-bottom: 0.5rem; /* Pequeño espacio inferior */
+        }
+
+        @media (min-width: 1024px) {
+            .grid-main {
+                grid-template-columns: 1fr 2fr; /* Lado izquierdo (Controles) 1, Lado derecho (Vistas) 2 */
+            }
+        }
+
+        /* Columna de Controles (Izquierda) */
+        .space-y-6 {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            overflow-y: auto; /* Permite scroll solo a los controles si no caben */
+            padding-right: 5px; /* Pequeño espacio para el scrollbar */
+        }
+        
+        /* Sección de Vistas y Resultados (Derecha) */
+        .results-section {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            flex-grow: 1;
+            overflow: hidden;
+        }
+
+        /* Grid para las dos Vistas (Input y Procesado) */
+        .grid-views {
+            flex-grow: 1; /* Ocupa todo el espacio disponible en la columna derecha */
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1rem;
+            overflow: hidden;
+        }
+
+        @media (min-width: 768px) {
+            .grid-views {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+        
+        /* Contenedor de cada vista individual (Input y Canvas) */
+        .grid-views > div {
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        
+        .grid-views > div h3 {
+            flex-shrink: 0; /* Título fijo */
+            margin-bottom: 0.5rem;
+        }
+
+        /* Contenedor de la Imagen/Video/Canvas */
+        .image-container {
+            flex-grow: 1; /* Ocupa el espacio restante en la vista */
+            min-height: 50px; /* Reducir min-height */
+            background-color: #e2e8f0;
+            border: 2px dashed #94a3b8;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            border-radius: 0.5rem;
+            position: relative;
+        }
+        
+        /* Panel de Resultados: debe tener altura fija */
+        .results-section .panel {
+            flex-shrink: 0;
+        }
+        
+        /* ======================================================= */
+        /* ESTILOS GENERALES (Mantenidos) */
+        /* ======================================================= */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
 
         h1 {
@@ -52,18 +148,7 @@
         .subtitle {
             color: #4b5563;
             margin-bottom: 1.5rem;
-        }
-
-        .grid-main {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 1.5rem;
-        }
-
-        @media (min-width: 1024px) {
-            .grid-main {
-                grid-template-columns: 1fr 2fr;
-            }
+            flex-shrink: 0;
         }
 
         .panel {
@@ -88,12 +173,6 @@
             color: #374151;
         }
 
-        .space-y-6 {
-            display: flex;
-            flex-direction: column;
-            gap: 1.5rem;
-        }
-
         .space-y-4 {
             display: flex;
             flex-direction: column;
@@ -104,12 +183,6 @@
             display: flex;
             flex-direction: column;
             gap: 0.75rem;
-        }
-
-        .space-y-2 {
-            display: flex;
-            flex-direction: column;
-            gap: 0.5rem;
         }
 
         .form-group {
@@ -229,65 +302,11 @@
         .btn-red.visible {
             display: block;
         }
-
-        .text-sm {
-            font-size: 0.875rem;
-        }
-
-        .text-xs {
-            font-size: 0.75rem;
-        }
-
-        .text-gray-500 {
-            color: #6b7280;
-        }
-
-        .text-gray-600 {
-            color: #4b5563;
-        }
-
-        .text-red-500 {
-            color: #ef4444;
-        }
-
-        .text-green-600 {
-            color: #16a34a;
-        }
-
-        .text-lg {
-            font-size: 1.125rem;
-        }
-
-        .font-medium {
-            font-weight: 500;
-        }
-
-        .font-bold {
-            font-weight: 700;
-        }
-
-        .font-semibold {
-            font-weight: 600;
-        }
-
-        /* Image Container */
-        .image-container {
-            min-height: 300px;
-            background-color: #e2e8f0;
-            border: 2px dashed #94a3b8;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            overflow: hidden;
-            border-radius: 0.5rem;
-            position: relative;
-            background-size: contain;
-            background-repeat: no-repeat;
-            background-position: center;
-        }
-
+        
         canvas, #originalImage, #webcamFeed {
             max-width: 100%;
+            max-height: 100%; /* Ajustar al 100% del contenedor */
+            width: auto;
             height: auto;
             position: absolute;
             top: 0;
@@ -296,7 +315,7 @@
             bottom: 0;
             margin: auto;
         }
-
+        
         .image-container p {
             color: #6b7280;
             text-align: center;
@@ -326,35 +345,13 @@
             display: none;
         }
 
-        /* Grid para vistas */
-        .grid-views {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 1.5rem;
-        }
-
-        @media (min-width: 768px) {
-            .grid-views {
-                grid-template-columns: 1fr 1fr;
-            }
-        }
-
-        .results-section {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 1.5rem;
-        }
-
-        @media (min-width: 1024px) {
-            .results-section {
-                grid-template-columns: 1fr;
-            }
-        }
-
         .results-grid {
             display: flex;
-            flex-direction: column;
-            gap: 0.5rem;
+            flex-wrap: wrap; /* Permite que los resultados fluyan en una línea */
+            gap: 0.5rem 1.5rem;
+        }
+        .results-grid p {
+             min-width: 45%; /* Asegura que al menos 2 quepan por fila en pantallas medias */
         }
 
         /* Modal */
@@ -642,14 +639,9 @@
             elements.processedCanvas.width = width;
             elements.processedCanvas.height = height;
             
-            // Ajusta el tamaño de los elementos de visualización para mantener la consistencia
-            const styleWidth = width + 'px';
-            const styleHeight = height + 'px';
-            
-            elements.webcamFeed.style.width = styleWidth;
-            elements.webcamFeed.style.height = styleHeight;
-            elements.originalImage.style.width = styleWidth;
-            elements.originalImage.style.height = styleHeight;
+            // Los elementos de visualización se ajustan automáticamente por CSS
+            // para llenar el espacio, pero mantenemos esta parte para asegurar
+            // que el canvas tenga la resolución correcta.
             
             return elements.processedCanvas;
         }
@@ -705,32 +697,27 @@
                         let aspectRatio = rect.width / rect.height;
 
                         if (aspectRatio >= Config.SQUARE_ASPECT_RATIO_MIN && aspectRatio <= Config.SQUARE_ASPECT_RATIO_MAX) {
+                            // Este es el candidato a cuadrado de referencia
                             referenceSquareContour = contour;
                         }
                     }
 
                     // 2. Detectar el objeto principal (contorno más grande)
                     if (area > maxArea) {
-                        // Asegurarse de que el contorno más grande no sea el cuadrado de referencia (si se detectó)
-                        if (!referenceSquareContour || !contour.isEqual(referenceSquareContour)) {
-                            maxArea = area;
-                            largestContour = contour; // Guardar la referencia del Mat
-                        } else if (!largestContour) {
-                            // Si el cuadrado ES el más grande, pero no se ha encontrado otro, se toma como el mayor
-                             largestContour = contour; 
-                        }
+                        maxArea = area;
+                        largestContour = contour; // Guardar la referencia del Mat
                     }
                     approx.delete();
                 }
                 
-                // Si el mayor contorno es el cuadrado, se re-evalúa si hay otro
+                // Si el contorno más grande es el cuadrado de referencia, buscamos el segundo más grande
                 if (largestContour && referenceSquareContour && largestContour.isEqual(referenceSquareContour)) {
-                    // Buscar el segundo contorno más grande (si existe)
                     maxArea = 0;
                     largestContour = null; 
                     for (let i = 0; i < contours.size(); ++i) {
                         let contour = contours.get(i);
                         let area = cv.contourArea(contour);
+                        // Ignorar contornos pequeños o el cuadrado de referencia
                         if (area < Config.MIN_CONTOUR_AREA_PX || contour.isEqual(referenceSquareContour)) continue;
 
                         if (area > maxArea) {
@@ -801,12 +788,12 @@
                         
                         // Si la calibración fue exitosa, calculamos en cm
                         if (calibrationSuccess && pixelsPerCm) {
-                            areaCm2 = areaPx / (pixelsPerCm * pixelsPerCm);
-                            perimeterCm = perimeterPx / pixelsPerCm;
-                            lengthCm = lengthPx / pixelsPerCm;
-                            widthCm = widthPx / pixelsPerCm;
+                            areaCm2 = `${(areaPx / (pixelsPerCm * pixelsPerCm)).toFixed(2)} cm²`;
+                            perimeterCm = `${(perimeterPx / pixelsPerCm).toFixed(2)} cm`;
+                            lengthCm = `${(lengthPx / pixelsPerCm).toFixed(2)} cm`;
+                            widthCm = `${(widthPx / pixelsPerCm).toFixed(2)} cm`;
                         } else {
-                            // Si falla la calibración, mostramos en píxeles para tener algún resultado
+                            // Si falla la calibración, mostramos en píxeles
                             areaCm2 = `${areaPx.toFixed(0)} px²`;
                             perimeterCm = `${perimeterPx.toFixed(2)} px`;
                             lengthCm = `${lengthPx.toFixed(2)} px`;
@@ -851,6 +838,8 @@
         function measureFinalImage() {
             if (!cvReady) { showAlertModal("OpenCV.js aún no está cargado."); return; }
             
+            let src = null;
+
             // 1. Tomar foto si se está en streaming
             if (streaming) {
                 const video = elements.webcamFeed;
@@ -860,13 +849,23 @@
                 const ctx = canvas.getContext('2d');
                 ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
                 
+                // Detener la cámara y mostrar la imagen capturada
                 stopCamera();
                 elements.originalImage.src = canvas.toDataURL('image/jpeg');
                 elements.originalImage.classList.remove('hidden');
                 elements.webcamFeed.classList.add('hidden');
+                
+                src = cv.imread(elements.originalImage);
 
-            } else if (!imageBase64) {
-                showAlertModal("Por favor, cargue una imagen o inicie la cámara.");
+            } else if (lastFrame) {
+                 // Si hay un frame capturado previamente (por ejemplo, después de detener la cámara)
+                 src = lastFrame.clone();
+            } else if (imageBase64) {
+                 // Si solo hay una imagen cargada
+                const imgElement = elements.originalImage;
+                src = cv.imread(imgElement);
+            } else {
+                showAlertModal("Por favor, cargue una imagen o inicie la cámara y capture una.");
                 return;
             }
 
@@ -874,17 +873,10 @@
             
             if (isNaN(realSideCm) || realSideCm <= 0) {
                 showAlertModal("Ingrese un valor de lado real (cm) válido (> 0) para la calibración.");
+                if (src) src.delete();
                 return;
             }
 
-            let src = null;
-            if (lastFrame) {
-                src = lastFrame.clone();
-            } else {
-                const imgElement = elements.originalImage;
-                src = cv.imread(imgElement);
-            }
-            
             // 2. Preparar canvas y procesar
             initializeCanvas(src);
             elements.canvasPlaceholder.classList.add('hidden');
@@ -1029,7 +1021,7 @@
                 stream.getTracks().forEach(track => track.stop());
                 stream = null;
             }
-            if (lastFrame) { lastFrame.delete(); lastFrame = null; }
+            // NOTA: lastFrame NO se elimina aquí para que measureFinalImage pueda usar el último frame capturado.
             if (videoCap) { videoCap.delete(); videoCap = null; }
 
             elements.webcamFeed.classList.add('hidden');
@@ -1052,7 +1044,7 @@
          * Carga una imagen del disco
          */
         function handleFile(event) {
-            stopCamera();
+            stopCamera(); // Detener la cámara si está activa
 
             const file = event.target.files[0];
             if (!file) return;
@@ -1088,6 +1080,15 @@
             
             elements.calibrationStatus.textContent = cvReady ? "Imagen cargada. Listo para medir." : "Cargando OpenCV.js...";
             elements.calibrationStatus.classList.add('text-red-500');
+            
+            // Forzar el proceso en la imagen cargada inmediatamente para inicializar el canvas
+            const tempImg = new Image();
+            tempImg.onload = () => {
+                let src = cv.imread(tempImg);
+                initializeCanvas(src);
+                if(src) src.delete();
+            }
+            tempImg.src = base64Data;
         }
 
     </script>
