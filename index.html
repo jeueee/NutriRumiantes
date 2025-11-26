@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🌿 Folia Scan Web - Optimizado</title>
-    <!-- OpenCV.js CDN (Librería de Visión por Computadora) -->
+    <title>📷 Contorno en Tiempo Real - Visión General</title>
     <script async src="https://docs.opencv.org/4.9.0/opencv.js" onload="onOpenCvReady()"></script>
     <style>
+        /* CSS se mantiene sin cambios para la apariencia */
         * {
             margin: 0;
             padding: 0;
@@ -415,20 +415,17 @@
 
     <div class="container">
         <h1>
-            <span class="text-green">🌿</span> Folia Scan Web (Tiempo Real - Optimizado)
+            <span class="text-green">📷</span> Contorno en Tiempo Real (Visión General)
         </h1>
-        <p class="subtitle">Visualice los contornos de la hoja en tiempo real con máximo rendimiento.</p>
+        <p class="subtitle">Detecta y contornea el objeto más grande en el *stream* de la cámara.</p>
 
-        <!-- Contenedor Principal: Ajustes y Vistas -->
         <div class="grid-main">
 
-            <!-- Panel de Control y Ajustes (Columna 1) -->
             <div class="space-y-6">
 
-                <!-- Área de Calibración -->
                 <div class="panel">
                     <h2>📏 Calibración de Escala</h2>
-                    <p class="text-sm text-gray-500" style="margin-bottom: 1rem;">Ingrese la longitud real (en cm) del cuadrado de referencia.</p>
+                    <p class="text-sm text-gray-500" style="margin-bottom: 1rem;">Opcional: Coloque un cuadrado de referencia para obtener métricas reales (cm).</p>
                     
                     <div class="form-group horizontal" style="margin-bottom: 1rem;">
                         <label for="scaleCm">Lado Real (cm)</label>
@@ -436,17 +433,15 @@
                     </div>
                     
                     <button id="btnMeasure" onclick="measureFinalImage()" disabled class="btn-blue">
-                        📐 Tomar Foto y Medir
+                        📐 Capturar y Medir
                     </button>
                     <p id="calibrationStatus" class="status-message text-red-500">Cargando OpenCV.js...</p>
                 </div>
 
-                <!-- Panel de Optimización (NUEVO) -->
                 <div class="panel">
-                    <h2 style="color: #4f46e5;">⚙️ Optimización</h2>
+                    <h2 style="color: #4f46e5;">⚙️ Optimización y Detección</h2>
                     
                     <div class="space-y-4">
-                        <!-- Resolución de video -->
                         <div class="form-group">
                             <label for="videoResolution">Resolución Video</label>
                             <select id="videoResolution">
@@ -457,7 +452,6 @@
                             </select>
                         </div>
 
-                        <!-- Threshold -->
                         <div class="form-group">
                             <label for="thresholdSlider">
                                 Umbral Binarización: <span id="thresholdValue">100</span>
@@ -465,7 +459,6 @@
                             <input type="range" id="thresholdSlider" min="0" max="255" value="100" step="5">
                         </div>
 
-                        <!-- Skip Frames -->
                         <div class="form-group">
                             <label for="skipFrames">
                                 Procesar 1 de cada <span id="skipFramesValue">1</span> frames
@@ -475,7 +468,6 @@
                     </div>
                 </div>
 
-                <!-- Panel de Carga de Imagen -->
                 <div class="panel">
                     <h2>📸 Opciones de Entrada</h2>
                     <div class="space-y-3">
@@ -494,11 +486,8 @@
                 </div>
             </div>
             
-            <!-- Vistas y Resultados (Columna 2) -->
             <div class="results-section">
-                <!-- Visores de Imagen -->
                 <div class="grid-views">
-                    <!-- Vista de la Cámara/Original (Video) -->
                     <div>
                         <h3>Fuente de Entrada</h3>
                         <div class="image-container">
@@ -508,9 +497,8 @@
                         </div>
                     </div>
 
-                    <!-- Vista Procesada (Canvas con Contornos en Tiempo Real) -->
                     <div>
-                        <h3>Detección en Tiempo Real</h3>
+                        <h3>Contorno en Tiempo Real</h3>
                         <div class="image-container">
                             <canvas id="processedCanvas" class="hidden"></canvas>
                             <div id="fpsCounter" class="performance-badge hidden">60 FPS</div>
@@ -519,12 +507,12 @@
                     </div>
                 </div>
 
-                <!-- Resultados de Medición -->
                 <div class="panel">
                     <h2>📊 Resultados de la Medición Final</h2>
+                    <p class="text-sm text-gray-500" style="margin-bottom: 0.5rem;">Las métricas en cm requieren la detección de un cuadrado de referencia.</p>
                     <div id="results" class="results-grid">
-                        <p id="areaResult" class="text-lg font-medium">Área de la Hoja: <span class="font-bold text-gray-500">N/A</span></p>
-                        <p id="perimeterResult" class="text-lg font-medium">Perímetro de la Hoja: <span class="font-bold text-gray-500">N/A</span></p>
+                        <p id="areaResult" class="text-lg font-medium">Área del Objeto: <span class="font-bold text-gray-500">N/A</span></p>
+                        <p id="perimeterResult" class="text-lg font-medium">Perímetro del Objeto: <span class="font-bold text-gray-500">N/A</span></p>
                         <p id="lengthResult" class="text-lg font-medium">Largo Máximo (L): <span class="font-bold text-gray-500">N/A</span></p>
                         <p id="widthResult" class="text-lg font-medium">Ancho Máximo (A): <span class="font-bold text-gray-500">N/A</span></p>
                         <p id="pixelCm" class="text-sm">Escala (Píxeles/cm): <span class="font-bold text-gray-500">N/A</span></p>
@@ -535,7 +523,6 @@
             </div>
         </div>
     </div>
-    <!-- Modal de Alerta -->
     <div id="alertModal" class="modal">
         <div class="modal-content">
             <h3>Alerta del Sistema</h3>
@@ -549,9 +536,11 @@
         // CONSTANTES GLOBALES Y VARIABLES DE ESTADO
         // =======================================================
         const Config = {
-            SQUARE_ASPECT_RATIO_MIN: 0.85,
+            // Razón de aspecto para detectar un cuadrado de calibración
+            SQUARE_ASPECT_RATIO_MIN: 0.85, 
             SQUARE_ASPECT_RATIO_MAX: 1.15,
-            MIN_CONTOUR_AREA_PX: 1000,
+            // Área mínima del contorno para ser considerado (en píxeles)
+            MIN_CONTOUR_AREA_PX: 1000, 
         };
 
         let imageBase64 = null; 
@@ -559,7 +548,7 @@
         let pixelsPerCm = null; 
         let cvReady = false; 
         let streaming = false;
-        let lastFrame = null;
+        let lastFrame = null; // Para guardar el último frame procesado para la medición
         let frameCounter = 0;
         let fpsCounter = 0;
         let lastFpsTime = Date.now();
@@ -653,10 +642,14 @@
             elements.processedCanvas.width = width;
             elements.processedCanvas.height = height;
             
-            elements.webcamFeed.style.width = width + 'px';
-            elements.webcamFeed.style.height = height + 'px';
-            elements.originalImage.style.width = width + 'px';
-            elements.originalImage.style.height = height + 'px';
+            // Ajusta el tamaño de los elementos de visualización para mantener la consistencia
+            const styleWidth = width + 'px';
+            const styleHeight = height + 'px';
+            
+            elements.webcamFeed.style.width = styleWidth;
+            elements.webcamFeed.style.height = styleHeight;
+            elements.originalImage.style.width = styleWidth;
+            elements.originalImage.style.height = styleHeight;
             
             return elements.processedCanvas;
         }
@@ -676,11 +669,12 @@
             let contours = null;
             let hierarchy = null;
             let dst = null;
+            let largestContour = null;
 
             try {
                 const thresholdValue = parseInt(elements.thresholdSlider.value);
                 
-                // Preprocesamiento (Escala de grises y Binarización)
+                // Preprocesamiento (Escala de grises y Binarización INVERSA)
                 gray = new cv.Mat();
                 binary = new cv.Mat();
                 cv.cvtColor(src, gray, cv.COLOR_RGBA2GRAY, 0);
@@ -692,10 +686,9 @@
                 cv.findContours(binary, contours, hierarchy, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE);
 
                 let referenceSquareContour = null;
-                let leafContour = null;
                 let maxArea = 0;
 
-                // Filtrar y clasificar Contornos
+                // Filtrar y clasificar Contornos: Buscar cuadrado de referencia y el contorno más grande (el objeto)
                 for (let i = 0; i < contours.size(); ++i) {
                     let contour = contours.get(i);
                     let area = cv.contourArea(contour);
@@ -706,7 +699,7 @@
                     let approx = new cv.Mat();
                     cv.approxPolyDP(contour, approx, 0.04 * perimeter, true);
                     
-                    // Detectar cuadrado de calibración
+                    // 1. Detectar cuadrado de calibración (4 vértices y razón de aspecto cercana a 1)
                     if (approx.rows === 4) {
                         let rect = cv.boundingRect(contour);
                         let aspectRatio = rect.width / rect.height;
@@ -716,21 +709,43 @@
                         }
                     }
 
-                    // Detectar hoja (contorno más grande)
+                    // 2. Detectar el objeto principal (contorno más grande)
                     if (area > maxArea) {
+                        // Asegurarse de que el contorno más grande no sea el cuadrado de referencia (si se detectó)
                         if (!referenceSquareContour || !contour.isEqual(referenceSquareContour)) {
                             maxArea = area;
-                            leafContour = contour;
+                            largestContour = contour; // Guardar la referencia del Mat
+                        } else if (!largestContour) {
+                            // Si el cuadrado ES el más grande, pero no se ha encontrado otro, se toma como el mayor
+                             largestContour = contour; 
                         }
                     }
                     approx.delete();
                 }
+                
+                // Si el mayor contorno es el cuadrado, se re-evalúa si hay otro
+                if (largestContour && referenceSquareContour && largestContour.isEqual(referenceSquareContour)) {
+                    // Buscar el segundo contorno más grande (si existe)
+                    maxArea = 0;
+                    largestContour = null; 
+                    for (let i = 0; i < contours.size(); ++i) {
+                        let contour = contours.get(i);
+                        let area = cv.contourArea(contour);
+                        if (area < Config.MIN_CONTOUR_AREA_PX || contour.isEqual(referenceSquareContour)) continue;
+
+                        if (area > maxArea) {
+                            maxArea = area;
+                            largestContour = contour; 
+                        }
+                    }
+                }
+
 
                 let calibrationSuccess = false;
-                let areaCm2 = 0;
-                let perimeterCm = 0;
-                let lengthCm = 0;
-                let widthCm = 0;
+                let areaCm2 = 'N/A';
+                let perimeterCm = 'N/A';
+                let lengthCm = 'N/A';
+                let widthCm = 'N/A';
 
                 // CÁLCULO DE ESCALA
                 if (referenceSquareContour) {
@@ -742,38 +757,36 @@
                     pixelsPerCm = sidePx / realSideCm;
                     calibrationSuccess = true;
                     
-                    if (calculateMetrics) {
+                    if (calculateMetrics || streaming) {
                         elements.pixelCm.textContent = `${pixelsPerCm.toFixed(2)} px/cm`;
                         elements.calibrationStatus.textContent = `✅ Escala: ${pixelsPerCm.toFixed(2)} px/cm`;
                         elements.calibrationStatus.classList.remove('text-red-500');
                         elements.calibrationStatus.classList.add('text-green-600');
                     }
-                } else if (calculateMetrics) {
+                } else if (calculateMetrics || streaming) {
                     pixelsPerCm = null;
+                    elements.pixelCm.textContent = `N/A`;
                     elements.calibrationStatus.textContent = `❌ Cuadrado de escala no detectado`;
                     elements.calibrationStatus.classList.remove('text-green-600');
                     elements.calibrationStatus.classList.add('text-red-500');
                 }
 
-                // DIBUJO Y MEDICIÓN
+                // DIBUJO Y MEDICIÓN DEL OBJETO PRINCIPAL
                 dst = src.clone();
 
-                if (leafContour && calibrationSuccess && pixelsPerCm) {
-                    // Dibujar contorno de la hoja (rojo)
-                    cv.drawContours(dst, new cv.MatVector(leafContour), 0, [255, 0, 0, 255], 3);
+                if (largestContour) {
+                    // Dibujar contorno del objeto (rojo)
+                    cv.drawContours(dst, new cv.MatVector(largestContour), 0, [255, 0, 0, 255], 3);
 
                     if (calculateMetrics) {
-                        const areaPx = cv.contourArea(leafContour);
-                        const perimeterPx = cv.arcLength(leafContour, true);
+                        const areaPx = cv.contourArea(largestContour);
+                        const perimeterPx = cv.arcLength(largestContour, true);
 
-                        areaCm2 = areaPx / (pixelsPerCm * pixelsPerCm);
-                        perimeterCm = perimeterPx / pixelsPerCm;
-
-                        const minRect = cv.minAreaRect(leafContour);
+                        // Las métricas en píxeles siempre se calculan
+                        const minRect = cv.minAreaRect(largestContour);
                         const size = minRect.size;
-                        
-                        lengthCm = Math.max(size.width, size.height) / pixelsPerCm;
-                        widthCm = Math.min(size.width, size.height) / pixelsPerCm;
+                        let lengthPx = Math.max(size.width, size.height);
+                        let widthPx = Math.min(size.width, size.height);
                         
                         // Dibujar bounding box (amarillo)
                         let vertices = cv.boxPoints(minRect);
@@ -785,6 +798,20 @@
                         ]);
                         cv.polylines(dst, [corners], true, [255, 255, 0, 255], 2, cv.LINE_AA);
                         corners.delete();
+                        
+                        // Si la calibración fue exitosa, calculamos en cm
+                        if (calibrationSuccess && pixelsPerCm) {
+                            areaCm2 = areaPx / (pixelsPerCm * pixelsPerCm);
+                            perimeterCm = perimeterPx / pixelsPerCm;
+                            lengthCm = lengthPx / pixelsPerCm;
+                            widthCm = widthPx / pixelsPerCm;
+                        } else {
+                            // Si falla la calibración, mostramos en píxeles para tener algún resultado
+                            areaCm2 = `${areaPx.toFixed(0)} px²`;
+                            perimeterCm = `${perimeterPx.toFixed(2)} px`;
+                            lengthCm = `${lengthPx.toFixed(2)} px`;
+                            widthCm = `${widthPx.toFixed(2)} px`;
+                        }
                     }
                 }
                 
@@ -805,10 +832,11 @@
             } catch (e) {
                 if (calculateMetrics) {
                     console.error("Error en CV:", e);
-                    showAlertModal("Error: " + e.message);
+                    showAlertModal("Error de procesamiento: " + e.message);
                 }
                 return null;
             } finally {
+                // Liberar memoria de OpenCV
                 if (gray) gray.delete();
                 if (binary) binary.delete();
                 if (contours) contours.delete();
@@ -818,11 +846,12 @@
         }
 
         /**
-         * Función principal para medir la imagen final
+         * Función principal para medir la imagen final (activada por el botón)
          */
         function measureFinalImage() {
             if (!cvReady) { showAlertModal("OpenCV.js aún no está cargado."); return; }
             
+            // 1. Tomar foto si se está en streaming
             if (streaming) {
                 const video = elements.webcamFeed;
                 const canvas = document.createElement('canvas');
@@ -844,7 +873,7 @@
             const realSideCm = parseFloat(elements.scaleCm.value);
             
             if (isNaN(realSideCm) || realSideCm <= 0) {
-                showAlertModal("Ingrese un valor de lado real (cm) válido (> 0).");
+                showAlertModal("Ingrese un valor de lado real (cm) válido (> 0) para la calibración.");
                 return;
             }
 
@@ -856,6 +885,7 @@
                 src = cv.imread(imgElement);
             }
             
+            // 2. Preparar canvas y procesar
             initializeCanvas(src);
             elements.canvasPlaceholder.classList.add('hidden');
             elements.processedCanvas.classList.remove('hidden');
@@ -863,11 +893,12 @@
 
             const result = processImage(src, elements.processedCanvas, true);
 
-            if (result && result.calibrationSuccess) {
-                elements.areaResult.textContent = `${result.areaCm2.toFixed(2)} cm²`;
-                elements.perimeterResult.textContent = `${result.perimeterCm.toFixed(2)} cm`;
-                elements.lengthResult.textContent = `${result.lengthCm.toFixed(2)} cm`;
-                elements.widthResult.textContent = `${result.widthCm.toFixed(2)} cm`;
+            // 3. Mostrar resultados
+            if (result) {
+                elements.areaResult.textContent = result.areaCm2;
+                elements.perimeterResult.textContent = result.perimeterCm;
+                elements.lengthResult.textContent = result.lengthCm;
+                elements.widthResult.textContent = result.widthCm;
             } else {
                 elements.areaResult.textContent = "N/A";
                 elements.perimeterResult.textContent = "N/A";
@@ -889,6 +920,8 @@
          */
         function processVideo() {
             if (!streaming || !cvReady) {
+                // Asegurarse de limpiar recursos si el streaming se detiene
+                if (lastFrame) { lastFrame.delete(); lastFrame = null; }
                 return;
             }
 
@@ -908,14 +941,18 @@
                 videoCap.read(src);
                 initializeCanvas(src);
                 
-                const result = processImage(src, elements.processedCanvas, false);
+                // processImage ahora solo dibuja contornos en tiempo real
+                processImage(src, elements.processedCanvas, false); 
                 
                 if (lastFrame) lastFrame.delete();
-                lastFrame = src.clone();
+                lastFrame = src.clone(); // Clona para que el frame esté disponible para measureFinalImage
                 
                 updateFpsCounter();
+            } catch (e) {
+                console.error("Error en processVideo loop:", e);
             } finally {
-                src.delete();
+                // Liberar el Mat de entrada si no se usó como lastFrame
+                if (src && (lastFrame !== src)) src.delete(); 
             }
             
             requestAnimationFrame(processVideo);
@@ -931,6 +968,7 @@
             }
 
             try {
+                // 1. Preparar la UI
                 elements.originalImage.classList.add('hidden');
                 elements.webcamFeed.classList.remove('hidden');
                 elements.placeholderText.classList.add('hidden');
@@ -938,6 +976,7 @@
                 elements.processedCanvas.classList.remove('hidden');
                 elements.fpsCounter.classList.remove('hidden');
 
+                // 2. Configurar la resolución
                 const resolution = parseInt(elements.videoResolution.value);
                 const resolutionMap = {
                     320: { width: { ideal: 320 }, height: { ideal: 240 } },
@@ -946,6 +985,7 @@
                     1024: { width: { ideal: 1024 }, height: { ideal: 768 } }
                 };
 
+                // 3. Obtener el stream de la cámara (facingMode: "environment" para cámara trasera en móvil)
                 stream = await navigator.mediaDevices.getUserMedia({ 
                     video: { 
                         facingMode: "environment",
@@ -955,19 +995,23 @@
                 
                 elements.webcamFeed.srcObject = stream;
                 
+                // 4. Inicializar VideoCapture de OpenCV una vez que los metadatos del video estén cargados
                 elements.webcamFeed.onloadedmetadata = () => {
                     if (videoCap) videoCap.delete();
                     videoCap = new cv.VideoCapture(elements.webcamFeed);
                     
                     streaming = true;
                     frameCounter = 0;
-                    requestAnimationFrame(processVideo);
+                    lastFpsTime = Date.now();
+                    requestAnimationFrame(processVideo); // Iniciar el loop de procesamiento
                 };
 
+                // 5. Actualizar botones
                 elements.btnCamera.classList.add('hidden');
                 elements.btnStopCamera.classList.remove('hidden');
                 elements.btnStopCamera.classList.add('visible');
                 elements.btnMeasure.disabled = false;
+                imageBase64 = null; // Limpiar imagen cargada
 
             } catch (err) {
                 showAlertModal("Error al acceder a la cámara. Verifica permisos y conexión.");
@@ -1034,11 +1078,14 @@
             elements.canvasPlaceholder.classList.remove('hidden');
             elements.fpsCounter.classList.add('hidden');
 
+            // Limpiar resultados anteriores
             elements.areaResult.textContent = "N/A";
             elements.perimeterResult.textContent = "N/A";
             elements.lengthResult.textContent = "N/A";
             elements.widthResult.textContent = "N/A";
             elements.pixelCm.textContent = "N/A";
+            elements.processingTime.textContent = "N/A";
+            
             elements.calibrationStatus.textContent = cvReady ? "Imagen cargada. Listo para medir." : "Cargando OpenCV.js...";
             elements.calibrationStatus.classList.add('text-red-500');
         }
