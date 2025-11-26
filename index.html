@@ -3,1374 +3,160 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Plataforma integral de ganadería holística sostenible y nutrición de rumiantes">
-    <title>GANADHOS - Ganadería Integral Sostenible</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        html {
-            scroll-behavior: smooth;
-        }
-
-        body {
-            font-family: 'Inter', 'Segoe UI', sans-serif;
-            background: linear-gradient(135deg, #f7f3e9 0%, #f5f7fa 100%);
-            color: #2c3e50;
-        }
-
-        /* ============ COLORES UNIFICADOS ============ */
-        :root {
-            --primary: #6b8e23;
-            --primary-dark: #556b2f;
-            --secondary: #c0a98f;
-            --accent: #667eea;
-            --accent-dark: #764ba2;
-            --success: #27ae60;
-            --warning: #f39c12;
-            --error: #e74c3c;
-            --bg-light: #f8f9fa;
-            --border: #e0e0e0;
-        }
-
-        .section-title {
-            position: relative;
-            display: inline-block;
-            font-size: 2.25rem;
-            font-weight: 700;
-        }
-
-        .section-title::after {
-            content: '';
-            position: absolute;
-            bottom: -8px;
-            left: 0;
-            width: 100%;
-            height: 3px;
-            background: linear-gradient(90deg, var(--primary) 0%, var(--accent) 100%);
-            border-radius: 9999px;
-        }
-
-        /* ============ NAVEGACIÓN ============ */
-        .navbar {
-            background: linear-gradient(135deg, var(--secondary) 0%, var(--primary) 100%);
-            position: sticky;
-            top: 0;
-            z-50;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-        }
-
-        .nav-link {
-            position: relative;
-            transition: all 0.3s ease;
-        }
-
-        .nav-link::after {
-            content: '';
-            position: absolute;
-            bottom: -2px;
-            left: 0;
-            width: 0;
-            height: 2px;
-            background: var(--warning);
-            transition: width 0.3s ease;
-        }
-
-        .nav-link:hover::after,
-        .nav-link.active::after {
-            width: 100%;
-        }
-
-        /* ============ CARDS Y CONTENEDORES ============ */
-        .card {
-            background: white;
-            border-radius: 1rem;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
-            transition: all 0.3s ease;
-        }
-
-        .card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
-        }
-
-        /* ============ FORMULARIOS ============ */
-        input, select, textarea {
-            border-color: var(--border);
-            transition: all 0.3s ease;
-        }
-
-        input:focus, select:focus, textarea:focus {
-            border-color: var(--accent);
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-        }
-
-        /* ============ BOTONES ============ */
-        .btn {
-            transition: all 0.3s ease;
-            font-weight: 600;
-            border-radius: 0.5rem;
-            cursor: pointer;
-            border: none;
-        }
-
-        .btn-primary {
-            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
-            color: white;
-        }
-
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 15px rgba(107, 142, 35, 0.3);
-        }
-
-        .btn-secondary {
-            background: var(--secondary);
-            color: white;
-        }
-
-        .btn-secondary:hover {
-            opacity: 0.9;
-        }
-
-        .btn-accent {
-            background: linear-gradient(135deg, var(--accent) 0%, var(--accent-dark) 100%);
-            color: white;
-        }
-
-        .btn-accent:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
-        }
-
-        .btn-success {
-            background: var(--success);
-            color: white;
-        }
-
-        .btn-success:hover {
-            opacity: 0.9;
-        }
-
-        .btn-danger {
-            background: var(--error);
-            color: white;
-            padding: 0.5rem 0.75rem;
-            font-size: 0.85rem;
-        }
-
-        /* ============ ALERTAS Y BADGES ============ */
-        .alert {
-            border-radius: 0.5rem;
-            padding: 1rem;
-            margin: 1rem 0;
-        }
-
-        .alert-success {
-            background: #d4edda;
-            color: #155724;
-            border: 1px solid #c3e6cb;
-        }
-
-        .alert-warning {
-            background: #fff3cd;
-            color: #856404;
-            border: 1px solid #ffeeba;
-        }
-
-        .alert-error {
-            background: #f8d7da;
-            color: #721c24;
-            border: 1px solid #f5c6cb;
-        }
-
-        .badge {
-            display: inline-block;
-            padding: 0.375rem 0.75rem;
-            border-radius: 9999px;
-            font-size: 0.85rem;
-            font-weight: 600;
-        }
-
-        .badge-success {
-            background: #d4edda;
-            color: #155724;
-        }
-
-        .badge-warning {
-            background: #fff3cd;
-            color: #856404;
-        }
-
-        /* ============ TABLAS ============ */
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin: 1rem 0;
-        }
-
-        thead {
-            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
-            color: white;
-        }
-
-        th, td {
-            padding: 0.75rem;
-            text-align: left;
-            border-bottom: 1px solid var(--border);
-        }
-
-        tbody tr:hover {
-            background: var(--bg-light);
-        }
-
-        /* ============ CÁLCULOS Y RESULTADOS ============ */
-        .result-section {
-            background: white;
-            border-radius: 0.75rem;
-            padding: 1.5rem;
-            margin-bottom: 1.5rem;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
-        }
-
-        .result-section h3 {
-            color: var(--primary);
-            font-size: 1.25rem;
-            margin-bottom: 1rem;
-            border-bottom: 2px solid var(--accent);
-            padding-bottom: 0.5rem;
-        }
-
-        .library-item {
-            padding: 0.75rem;
-            background: var(--bg-light);
-            border-radius: 0.5rem;
-            margin-bottom: 0.5rem;
-            cursor: pointer;
-            border: 2px solid transparent;
-            transition: all 0.3s ease;
-        }
-
-        .library-item:hover {
-            background: #e8f4f8;
-            border-color: var(--accent);
-            transform: translateX(4px);
-        }
-
-        .library-item strong {
-            display: block;
-            color: #2c3e50;
-            margin-bottom: 0.25rem;
-        }
-
-        .library-item small {
-            color: #7f8c8d;
-            font-size: 0.8rem;
-        }
-
-        /* ============ GRID Y LAYOUT ============ */
-        .ingredient-item {
-            display: grid;
-            grid-template-columns: 1.5fr 0.8fr 0.4fr 0.8fr 1fr;
-            gap: 0.75rem;
-            align-items: center;
-            padding: 1rem;
-            background: var(--bg-light);
-            border-radius: 0.5rem;
-            margin-bottom: 0.75rem;
-            transition: all 0.3s ease;
-        }
-
-        .ingredient-item:hover {
-            background: #ecf0f1;
-        }
-
-        .ingredient-item input {
-            text-align: center;
-            padding: 0.5rem;
-        }
-
-        @media (max-width: 768px) {
-            .ingredient-item {
-                grid-template-columns: 1fr;
-                gap: 0.5rem;
-            }
-
-            .ingredient-item input,
-            .ingredient-item button {
-                grid-column: 1 / -1;
-            }
-
-            .section-title {
-                font-size: 1.75rem;
-            }
-
-            table {
-                font-size: 0.9rem;
-            }
-
-            th, td {
-                padding: 0.5rem;
-            }
-        }
-
-        @media print {
-            .navbar, button, .search-box, .library-container {
-                display: none;
-            }
-
-            body {
-                background: white;
-            }
-        }
-
-        /* ============ MENSAJE DE CONFIRMACIÓN ============ */
-        #copied-message {
-            position: fixed;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: var(--success);
-            color: white;
-            padding: 0.75rem 1.5rem;
-            border-radius: 9999px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-            opacity: 0;
-            transition: opacity 0.3s ease;
-            z-index: 1000;
-            font-weight: 600;
-        }
-
-        .hidden {
-            display: none;
-        }
-
-        /* ============ ANIMACIONES ============ */
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(10px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .fade-in {
-            animation: fadeIn 0.3s ease-in;
-        }
-    </style>
+    <title>NutriRumiantes - Plataforma Integral de Nutrición Ganadera</title>
+    <link rel="stylesheet" href="css/styles.css">
 </head>
-<body class="antialiased text-gray-800">
-
-    <!-- ============ NAVEGACIÓN ============ -->
-    <header class="navbar">
-        <nav class="container mx-auto px-4 py-4 flex justify-between items-center rounded-b-3xl mx-2 md:mx-4">
-            <div class="font-bold text-2xl text-white">🐄 GANADHOS</div>
-            <div class="flex gap-4 md:gap-6 flex-wrap justify-end">
-                <a onclick="switchTab('inicio')" class="nav-link text-white cursor-pointer">Inicio</a>
-                <a onclick="switchTab('racionador')" class="nav-link text-white cursor-pointer">Nutrición</a>
-                <a onclick="switchTab('noticias')" class="nav-link text-white cursor-pointer">Noticias</a>
-                <a onclick="switchTab('investigacion')" class="nav-link text-white cursor-pointer">Investigación</a>
-                <a onclick="switchTab('pastoreo')" class="nav-link text-white cursor-pointer">Pastoreo</a>
-                <a onclick="switchTab('contacto')" class="nav-link text-white cursor-pointer">Contacto</a>
+<body>
+    <!-- NAVEGACIÓN -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="logo">
+                🐄 NutriRumiantes
             </div>
-        </nav>
-    </header>
+            <ul class="nav-menu">
+                <li><a onclick="showSection('racionador')" class="nav-link active">Racionador</a></li>
+                <li><a onclick="showSection('calculadora')" class="nav-link">Calculadora</a></li>
+                <li><a onclick="showSection('noticias')" class="nav-link">Noticias</a></li>
+                <li><a onclick="showSection('investigacion')" class="nav-link">Investigación</a></li>
+                <li><a onclick="showSection('contacto')" class="nav-link">Contacto</a></li>
+            </ul>
+        </div>
+    </nav>
 
-    <main class="container mx-auto px-4 py-12">
-
-        <!-- ============ SECCIÓN INICIO ============ -->
-        <section id="inicio" class="tab-content fade-in">
-            <div class="card p-8 md:p-12 max-w-4xl mx-auto mb-12">
-                <h1 class="text-5xl md:text-6xl font-extrabold text-[#6b8e23] mb-4">GANADHOS</h1>
-                <p class="text-xl font-medium text-gray-600 mb-10 italic">Ganadería Holística y Sostenible</p>
-
-                <div class="grid md:grid-cols-3 gap-8 text-left">
-                    <div>
-                        <h2 class="text-2xl font-semibold text-[#556b2f] mb-3">Misión</h2>
-                        <p class="text-gray-700">Promover la ganadería regenerativa a través de investigación y difusión de conocimientos, transformando sistemas de producción para ser más resilientes y respetuosos con el ambiente.</p>
-                    </div>
-                    <div>
-                        <h2 class="text-2xl font-semibold text-[#556b2f] mb-3">Visión</h2>
-                        <p class="text-gray-700">Ser líderes en el desarrollo de sistemas ganaderos sostenibles que mejoren la salud del suelo, biodiversidad y calidad de vida de productores.</p>
-                    </div>
-                    <div>
-                        <h2 class="text-2xl font-semibold text-[#556b2f] mb-3">Objetivo</h2>
-                        <p class="text-gray-700">Investigar, validar y comunicar técnicas de manejo holístico para que ganaderos implementen prácticas que aumenten productividad de manera sostenible.</p>
-                    </div>
-                </div>
+    <div class="container">
+        <!-- SECCIÓN: RACIONADOR -->
+        <section id="racionador" class="section active">
+            <div class="section-header">
+                <h1>🥗 Racionador Nutricional</h1>
+                <p>Diseña dietas balanceadas para tu ganado rumiante</p>
             </div>
 
-            <div class="mb-12">
-                <h2 class="section-title text-center mb-12">Áreas de Investigación</h2>
-                <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-                    <div class="card p-6 text-center">
-                        <div class="text-5xl mb-4">🌿</div>
-                        <h3 class="font-bold text-lg text-[#556b2f] mb-2">Ganadería Holística</h3>
-                        <p class="text-gray-600 text-sm">Manejo integral del pastoreo para regenerar suelos.</p>
-                    </div>
-                    <div class="card p-6 text-center">
-                        <div class="text-5xl mb-4">🛰️</div>
-                        <h3 class="font-bold text-lg text-[#556b2f] mb-2">Precisión</h3>
-                        <p class="text-gray-600 text-sm">Tecnologías avanzadas para optimizar la producción.</p>
-                    </div>
-                    <div class="card p-6 text-center">
-                        <div class="text-5xl mb-4">🌍</div>
-                        <h3 class="font-bold text-lg text-[#556b2f] mb-2">Sostenibilidad</h3>
-                        <p class="text-gray-600 text-sm">Captura de carbono y conservación del agua.</p>
-                    </div>
-                    <div class="card p-6 text-center">
-                        <div class="text-5xl mb-4">🐮</div>
-                        <h3 class="font-bold text-lg text-[#556b2f] mb-2">Bienestar Animal</h3>
-                        <p class="text-gray-600 text-sm">Prácticas para mejorar salud y calidad de vida.</p>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- ============ SECCIÓN RACIONADOR ============ -->
-        <section id="racionador" class="tab-content hidden fade-in">
-            <div class="mb-8">
-                <h2 class="section-title text-center mb-8">Racionador de Nutrición Ganadera</h2>
-            </div>
-
-            <div class="grid lg:grid-cols-3 gap-6 mb-8">
-                <!-- FORMULARIO -->
-                <div class="card p-6">
-                    <h3 class="text-xl font-bold text-[#667eea] mb-4">Parámetros</h3>
-
-                    <div class="mb-4">
-                        <label for="species" class="block font-medium text-gray-700 mb-2">Especie *</label>
-                        <select id="species" onchange="handleSpeciesChange()" class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#667eea]">
+            <div class="racionador-container">
+                <!-- SIDEBAR -->
+                <div class="sidebar">
+                    <h3>Datos del Animal</h3>
+                    <div class="form-group">
+                        <label>Especie</label>
+                        <select id="species" onchange="updateAnimalTypes()">
                             <option value="">Seleccionar...</option>
                             <option value="bovinos">Bovinos</option>
                             <option value="ovinos">Ovinos</option>
                             <option value="caprinos">Caprinos</option>
-                            <option value="porcinos">Porcinos</option>
                         </select>
                     </div>
 
-                    <div class="mb-4">
-                        <label for="animalType" class="block font-medium text-gray-700 mb-2">Tipo de Animal *</label>
-                        <select id="animalType" onchange="updateRequirements()" class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#667eea]">
+                    <div class="form-group">
+                        <label>Tipo de Animal</label>
+                        <select id="animalType" onchange="updateRequirements()">
                             <option value="">Seleccionar...</option>
                         </select>
                     </div>
 
-                    <div class="mb-4">
-                        <label for="weight" class="block font-medium text-gray-700 mb-2">Peso (kg) *</label>
-                        <input type="number" id="weight" min="10" max="1000" placeholder="Ej: 500" class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#667eea]">
+                    <div class="form-group">
+                        <label>Peso (kg)</label>
+                        <input type="number" id="weight" placeholder="500" min="50" step="10">
                     </div>
 
-                    <div class="mb-6">
-                        <label for="dailyIntake" class="block font-medium text-gray-700 mb-2">Consumo Diario (kg) *</label>
-                        <input type="number" id="dailyIntake" min="1" max="100" value="10" step="0.1" class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#667eea]">
+                    <h3>Requerimientos Nutricionales</h3>
+                    <div id="requirementsList"></div>
+
+                    <h3>Formulación</h3>
+                    <div class="form-group">
+                        <label>Consumo Diario (kg) <span class="label-help">Materia seca</span></label>
+                        <input type="number" id="dailyIntake" value="10" min="1" step="0.5">
                     </div>
 
-                    <h4 class="text-sm font-bold text-[#667eea] uppercase mb-3">Requerimientos</h4>
-                    <div id="requirementsDisplay" class="bg-blue-50 border-2 border-[#667eea] rounded-lg p-3 text-sm mb-6">
-                        <div class="text-gray-500 text-center">Selecciona especie y animal</div>
-                    </div>
-
-                    <div class="flex gap-3">
-                        <button onclick="calculateNutrition()" class="btn btn-accent flex-1">Calcular</button>
-                        <button onclick="clearForm()" class="btn btn-secondary flex-1">Limpiar</button>
-                    </div>
-                    <button onclick="loadExampleDiet()" class="btn btn-success w-full mt-3">📋 Ejemplo</button>
-                </div>
-
-                <!-- LIBRERÍA Y SELECCIÓN -->
-                <div class="lg:col-span-2">
-                    <div class="card p-6 mb-6">
-                        <h3 class="text-xl font-bold text-[#667eea] mb-4">Librería de Ingredientes</h3>
-                        <input type="text" id="ingredientSearch" placeholder="Buscar ingredientes..." 
-                               onkeyup="filterIngredients()" 
-                               class="w-full px-3 py-2 border rounded-lg mb-4 focus:outline-none focus:ring-2 focus:ring-[#667eea]">
-                        <div id="ingredientLibrary" class="max-h-96 overflow-y-auto">
-                            <div class="library-item" style="cursor: default;">Cargando ingredientes...</div>
-                        </div>
-                    </div>
-
-                    <div class="card p-6">
-                        <h3 class="text-xl font-bold text-[#667eea] mb-4">Ingredientes Seleccionados</h3>
-                        <div id="ingredientsList" class="min-h-20"></div>
-                        <div id="noIngredientsMsg" class="text-gray-500 text-center py-5">
-                            No hay ingredientes seleccionados
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- RESULTADOS -->
-            <div id="resultsContainer" class="hidden">
-                <h3 class="text-3xl font-bold text-[#667eea] my-8">Resultados</h3>
-
-                <div class="result-section">
-                    <h3>📊 Composición Nutricional</h3>
-                    <div id="nutritionResults"></div>
-                </div>
-
-                <div class="result-section">
-                    <h3>🥗 Composición de la Dieta</h3>
-                    <div id="compositionResults"></div>
-                </div>
-
-                <div class="result-section">
-                    <h3>💡 Recomendaciones</h3>
-                    <div id="recommendationsResults"></div>
-                </div>
-
-                <div class="flex gap-3 mt-8">
-                    <button onclick="printReport()" class="btn btn-success flex-1">🖨️ Imprimir</button>
-                    <button onclick="exportPDF()" class="btn btn-primary flex-1">📄 Exportar PDF</button>
-                </div>
-            </div>
-        </section>
-
-        <!-- ============ SECCIÓN PASTOREO ============ -->
-        <section id="pastoreo" class="tab-content hidden fade-in">
-            <div class="mb-8">
-                <h2 class="section-title text-center mb-8">Calculadora de Rotación de Pastoreo</h2>
-            </div>
-
-            <div class="card p-8 max-w-2xl mx-auto">
-                <p class="text-gray-700 mb-6">Estima un ciclo de rotación para tus parcelas. Ingresa los datos de tu terreno.</p>
-
-                <div class="grid md:grid-cols-3 gap-6 mb-6">
-                    <div>
-                        <label for="area" class="block font-medium text-gray-700 mb-2">Área total (hectáreas) *</label>
-                        <input type="number" id="area" placeholder="Ej: 50" class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#c0a98f]">
-                    </div>
-                    <div>
-                        <label for="animals" class="block font-medium text-gray-700 mb-2">Número de animales *</label>
-                        <input type="number" id="animals" placeholder="Ej: 100" class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#c0a98f]">
-                    </div>
-                    <div>
-                        <label for="rest" class="block font-medium text-gray-700 mb-2">Días de descanso *</label>
-                        <input type="number" id="rest" placeholder="Ej: 30" class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#c0a98f]">
+                    <div class="button-group">
+                        <button class="btn btn-primary" onclick="calculateNutrition()">📊 Calcular</button>
+                        <button class="btn btn-secondary" onclick="loadExampleDiet()">📋 Ejemplo</button>
+                        <button class="btn btn-danger" onclick="clearForm()">🗑️ Limpiar</button>
                     </div>
                 </div>
 
-                <button onclick="calcularRotacion()" class="btn btn-primary w-full mb-6">Calcular Rotación</button>
+                <!-- CONTENIDO PRINCIPAL -->
+                <div class="main-content">
+                    <h3>📚 Biblioteca de Ingredientes</h3>
+                    <div class="form-group">
+                        <input type="text" id="ingredientSearch" placeholder="Buscar ingrediente..." 
+                            onkeyup="filterIngredients()">
+                    </div>
+                    <div class="form-group">
+                        <select id="ingredientRegion" onchange="filterIngredients()">
+                            <option value="">Todas las regiones</option>
+                            <option value="local">Local</option>
+                            <option value="importado">Importado</option>
+                        </select>
+                    </div>
 
-                <div id="resultado" class="hidden text-lg font-medium text-gray-700 bg-blue-50 border-l-4 border-[#c0a98f] p-4 rounded">
-                </div>
-            </div>
-        </section>
+                    <div id="ingredientLibrary" class="ingredient-library"></div>
 
-        <!-- ============ SECCIÓN NOTICIAS ============ -->
-        <section id="noticias" class="tab-content hidden fade-in">
-            <div class="mb-8">
-                <h2 class="section-title text-center mb-8">Noticias Ganaderas</h2>
-            </div>
+                    <h3 style="margin-top: 30px;">🍽️ Ingredientes Seleccionados</h3>
+                    <div id="noIngredientsMsg" class="empty-state">
+                        Selecciona ingredientes de la biblioteca
+                    </div>
+                    <div id="ingredientsList" class="ingredients-list"></div>
 
-            <div class="grid lg:grid-cols-3 gap-6">
-                <!-- FILTROS -->
-                <div class="card p-6 h-fit">
-                    <h3 class="text-lg font-bold text-[#667eea] mb-4">Filtrar</h3>
-                    <div class="space-y-4">
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Categoría</label>
-                            <select id="newsCategory" onchange="filterNews()" class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#667eea]">
-                                <option value="">Todas</option>
-                                <option value="nutricion">Nutrición</option>
-                                <option value="sostenibilidad">Sostenibilidad</option>
-                                <option value="tecnologia">Tecnología</option>
-                                <option value="bienestar">Bienestar Animal</option>
-                                <option value="mercado">Mercado</option>
-                            </select>
-                        </div>
-                    </div>
-                </div>
+                    <div id="resultsContainer" class="hidden">
+                        <h3 style="margin-top: 30px;">📈 Resultados Nutricionales</h3>
+                        <div id="nutritionResults"></div>
 
-                <!-- NOTICIAS -->
-                <div id="newsList" class="lg:col-span-2 space-y-6">
-                    <!-- Se llenará con JavaScript -->
-                </div>
-            </div>
-        </section>
+                        <h3 style="margin-top: 30px;">📋 Composición de la Dieta</h3>
+                        <div id="compositionResults"></div>
 
-        <!-- ============ SECCIÓN INVESTIGACIÓN ============ -->
-        <section id="investigacion" class="tab-content hidden fade-in">
-            <div class="mb-12">
-                <h2 class="section-title text-center mb-8">Nuestro Equipo de Investigación</h2>
-            </div>
+                        <h3 style="margin-top: 30px;">💡 Recomendaciones</h3>
+                        <div id="recommendationsResults"></div>
 
-            <!-- INVESTIGADORES -->
-            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-16">
-                <div id="investigadoresList">
-                    <!-- Se llenará con JavaScript -->
-                </div>
-            </div>
-
-            <!-- PROYECTOS Y PUBLICACIONES -->
-            <div class="mb-12">
-                <h3 class="text-3xl font-bold text-center text-[#556b2f] mb-8">Proyectos Activos</h3>
-                <div class="grid md:grid-cols-2 gap-6">
-                    <div class="card p-6">
-                        <div class="text-4xl mb-3">🌱</div>
-                        <h4 class="font-bold text-lg text-[#556b2f] mb-2">Regeneración de Suelos</h4>
-                        <p class="text-gray-600 text-sm mb-4">Evaluación de técnicas de pastoreo holístico en diferentes tipos de suelo de la región Yucateca.</p>
-                        <div class="text-xs bg-blue-50 p-2 rounded">Fase: Validación en campo</div>
-                    </div>
-                    <div class="card p-6">
-                        <div class="text-4xl mb-3">💻</div>
-                        <h4 class="font-bold text-lg text-[#556b2f] mb-2">Monitoreo con IoT</h4>
-                        <p class="text-gray-600 text-sm mb-4">Sistema de sensores para monitoreo en tiempo real de condiciones de pastoreo y salud animal.</p>
-                        <div class="text-xs bg-green-50 p-2 rounded">Fase: Desarrollo prototipo</div>
-                    </div>
-                    <div class="card p-6">
-                        <div class="text-4xl mb-3">🌍</div>
-                        <h4 class="font-bold text-lg text-[#556b2f] mb-2">Huella de Carbono</h4>
-                        <p class="text-gray-600 text-sm mb-4">Cuantificación del potencial de captura de carbono en sistemas ganaderos sostenibles.</p>
-                        <div class="text-xs bg-yellow-50 p-2 rounded">Fase: Análisis datos</div>
-                    </div>
-                    <div class="card p-6">
-                        <div class="text-4xl mb-3">🐄</div>
-                        <h4 class="font-bold text-lg text-[#556b2f] mb-2">Bienestar y Productividad</h4>
-                        <p class="text-gray-600 text-sm mb-4">Relación entre prácticas de manejo holístico y indicadores de bienestar animal.</p>
-                        <div class="text-xs bg-purple-50 p-2 rounded">Fase: Recolección datos</div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- GALERÍA -->
-            <div class="mb-12">
-                <h3 class="text-3xl font-bold text-center text-[#556b2f] mb-8">Galería de Campo</h3>
-                <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-                    <div class="rounded-xl overflow-hidden shadow-md hover:shadow-lg transition-shadow cursor-pointer">
-                        <img src="https://placehold.co/400x300/6b8e23/ffffff?text=Pastoreo" alt="Pastoreo holístico" class="w-full h-64 object-cover hover:scale-105 transition-transform">
-                    </div>
-                    <div class="rounded-xl overflow-hidden shadow-md hover:shadow-lg transition-shadow cursor-pointer">
-                        <img src="https://placehold.co/400x300/556b2f/ffffff?text=Ganado" alt="Ganado en pastura" class="w-full h-64 object-cover hover:scale-105 transition-transform">
-                    </div>
-                    <div class="rounded-xl overflow-hidden shadow-md hover:shadow-lg transition-shadow cursor-pointer">
-                        <img src="https://placehold.co/400x300/c0a98f/ffffff?text=Investigacion" alt="Trabajo de investigación" class="w-full h-64 object-cover hover:scale-105 transition-transform">
-                    </div>
-                    <div class="rounded-xl overflow-hidden shadow-md hover:shadow-lg transition-shadow cursor-pointer">
-                        <img src="https://placehold.co/400x300/667eea/ffffff?text=Tecnologia" alt="Tecnología en campo" class="w-full h-64 object-cover hover:scale-105 transition-transform">
-                    </div>
-                    <div class="rounded-xl overflow-hidden shadow-md hover:shadow-lg transition-shadow cursor-pointer">
-                        <img src="https://placehold.co/400x300/764ba2/ffffff?text=Suelo" alt="Análisis de suelo" class="w-full h-64 object-cover hover:scale-105 transition-transform">
-                    </div>
-                    <div class="rounded-xl overflow-hidden shadow-md hover:shadow-lg transition-shadow cursor-pointer">
-                        <img src="https://placehold.co/400x300/f39c12/ffffff?text=Equipo" alt="Equipo de trabajo" class="w-full h-64 object-cover hover:scale-105 transition-transform">
-                    </div>
-                    <div class="rounded-xl overflow-hidden shadow-md hover:shadow-lg transition-shadow cursor-pointer">
-                        <img src="https://placehold.co/400x300/27ae60/ffffff?text=Sostenibilidad" alt="Sostenibilidad" class="w-full h-64 object-cover hover:scale-105 transition-transform">
-                    </div>
-                    <div class="rounded-xl overflow-hidden shadow-md hover:shadow-lg transition-shadow cursor-pointer">
-                        <img src="https://placehold.co/400x300/e74c3c/ffffff?text=Biodiversidad" alt="Biodiversidad" class="w-full h-64 object-cover hover:scale-105 transition-transform">
-                    </div>
-                </div>
-            </div>
-
-            <!-- PUBLICACIONES -->
-            <div>
-                <h3 class="text-3xl font-bold text-center text-[#556b2f] mb-8">Publicaciones Recientes</h3>
-                <div class="grid md:grid-cols-2 gap-6">
-                    <div class="card p-6 border-l-4 border-[#6b8e23]">
-                        <div class="flex items-start gap-4">
-                            <div class="text-3xl">📄</div>
-                            <div>
-                                <h4 class="font-bold text-lg text-[#556b2f]">Impacto del Pastoreo Holístico en la Salud del Suelo</h4>
-                                <p class="text-sm text-gray-600 mt-1">Fernández et al., 2024 - Revista de Ganadería Sostenible</p>
-                                <p class="text-gray-700 mt-3">Estudio comparativo de propiedades físicas y químicas del suelo bajo diferentes sistemas de pastoreo en la Península de Yucatán.</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="card p-6 border-l-4 border-[#667eea]">
-                        <div class="flex items-start gap-4">
-                            <div class="text-3xl">📄</div>
-                            <div>
-                                <h4 class="font-bold text-lg text-[#556b2f]">Nutrición de Precisión en Rumiantes</h4>
-                                <p class="text-sm text-gray-600 mt-1">López & Méndez, 2024 - Revista Técnica Ganadera</p>
-                                <p class="text-gray-700 mt-3">Uso de herramientas de cálculo nutricional para optimizar dietas con ingredientes locales y reducir costos de producción.</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="card p-6 border-l-4 border-[#f39c12]">
-                        <div class="flex items-start gap-4">
-                            <div class="text-3xl">📄</div>
-                            <div>
-                                <h4 class="font-bold text-lg text-[#556b2f]">Bienestar Animal y Productividad</h4>
-                                <p class="text-sm text-gray-600 mt-1">García et al., 2024 - Journal of Livestock Research</p>
-                                <p class="text-gray-700 mt-3">Análisis de la correlación entre indicadores de bienestar y parámetros productivos en ganado de leche.</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="card p-6 border-l-4 border-[#27ae60]">
-                        <div class="flex items-start gap-4">
-                            <div class="text-3xl">📄</div>
-                            <div>
-                                <h4 class="font-bold text-lg text-[#556b2f]">Tecnología IoT en Ganadería</h4>
-                                <p class="text-sm text-gray-600 mt-1">Rodríguez et al., 2024 - Agritech Innovation</p>
-                                <p class="text-gray-700 mt-3">Implementación de sensores remotos para monitoreo continuo de condiciones de pastoreo y salud animal.</p>
-                            </div>
+                        <div class="button-group">
+                            <button class="btn btn-primary" onclick="printReport()">🖨️ Imprimir</button>
+                            <button class="btn btn-primary" onclick="exportPDF()">📄 Exportar PDF</button>
+                            <button class="btn btn-secondary" onclick="optimizeDiet()">✨ Optimizar</button>
                         </div>
                     </div>
                 </div>
             </div>
         </section>
 
-        <!-- ============ SECCIÓN CONTACTO ============ -->
-        <section id="contacto" class="tab-content hidden fade-in">
-            <div class="mb-8">
-                <h2 class="section-title text-center mb-8">Contacto</h2>
+        <!-- OTRAS SECCIONES -->
+        <section id="calculadora" class="section">
+            <div class="section-header">
+                <h1>🧮 Calculadora Nutricional</h1>
             </div>
-
-            <div class="card p-8 max-w-2xl mx-auto">
-                <form onsubmit="handleContactSubmit(event)" class="space-y-4">
-                    <div>
-                        <label for="contactName" class="block font-medium text-gray-700 mb-2">Nombre *</label>
-                        <input type="text" id="contactName" required class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#667eea]">
-                    </div>
-                    <div>
-                        <label for="contactEmail" class="block font-medium text-gray-700 mb-2">Email *</label>
-                        <input type="email" id="contactEmail" required class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#667eea]">
-                    </div>
-                    <div>
-                        <label for="contactMessage" class="block font-medium text-gray-700 mb-2">Mensaje *</label>
-                        <textarea id="contactMessage" rows="5" required class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#667eea]"></textarea>
-                    </div>
-                    <button type="submit" class="btn btn-primary w-full">Enviar Mensaje</button>
-                </form>
-
-                <div class="mt-8 p-6 bg-gray-50 rounded-lg">
-                    <h4 class="font-semibold text-lg text-[#556b2f] mb-2">¿Preguntas?</h4>
-                    <p class="text-gray-700">Comparte esta plataforma:</p>
-                    <button onclick="copyPageUrl()" class="btn btn-secondary w-full mt-4">📋 Copiar Enlace</button>
-                </div>
+            <div style="background: white; padding: 30px; border-radius: 10px; box-shadow: 0 10px 30px rgba(0,0,0,0.1);">
+                <p>Sección de calculadora en desarrollo...</p>
             </div>
         </section>
 
-    </main>
+        <section id="noticias" class="section">
+            <div class="section-header">
+                <h1>📰 Noticias</h1>
+            </div>
+            <div style="background: white; padding: 30px; border-radius: 10px; box-shadow: 0 10px 30px rgba(0,0,0,0.1);">
+                <p>Noticias agropecuarias en desarrollo...</p>
+            </div>
+        </section>
 
-    <!-- ============ PIE DE PÁGINA ============ -->
-    <footer class="bg-gradient-to-r from-[#556b2f] to-[#6b8e23] text-white p-8 text-center rounded-t-3xl mx-2 md:mx-4 mt-16">
-        <p>&copy; 2025 GANADHOS. Todos los derechos reservados.</p>
-        <div class="mt-2 text-sm">Plataforma Integral de Ganadería Holística y Sostenible</div>
-    </footer>
+        <section id="investigacion" class="section">
+            <div class="section-header">
+                <h1>🔬 Investigación</h1>
+            </div>
+            <div style="background: white; padding: 30px; border-radius: 10px; box-shadow: 0 10px 30px rgba(0,0,0,0.1);">
+                <p>Sección de investigación en desarrollo...</p>
+            </div>
+        </section>
 
-    <!-- MENSAJE DE CONFIRMACIÓN -->
-    <div id="copied-message">Enlace copiado al portapapeles</div>
+        <section id="contacto" class="section">
+            <div class="section-header">
+                <h1>📧 Contacto</h1>
+            </div>
+            <div style="background: white; padding: 30px; border-radius: 10px; box-shadow: 0 10px 30px rgba(0,0,0,0.1);">
+                <p>Formulario de contacto en desarrollo...</p>
+            </div>
+        </section>
+    </div>
 
-    <script>
-        // ============ DATOS COMPARTIDOS ============
-        const INVESTIGATORS = [
-            {
-                id: 1,
-                name: 'Dr. Jorge Canul Solís',
-                title: 'Profesor Investigador - Nutrición de Rumiantes',
-                specialty: 'Nutrición de Rumiantes y Forrajes Tropicales',
-                education: 'Doctorado en Nutrición de Rumiantes',
-                institution: 'Instituto Tecnológico de Tizimín - TecNM',
-                experience: 'Experto en producción de forrajes tropicales',
-                publications: '+130 artículos científicos',
-                citations: '+830 citaciones',
-                image: 'https://placehold.co/200x200/6b8e23/ffffff?text=Jorge+Canul',
-                bio: 'Especialista de renombre internacional en nutrición de rumiantes en sistemas tropicales. Líder en investigación de metano entérico y sostenibilidad ganadera. Desarrolló cámaras respiratorias para medición de metano.',
-                research: [
-                    'Emisiones de metano en rumiantes',
-                    'Nutrición tropical de ovinos y caprinos',
-                    'Forrajes y arbóreas tropicales',
-                    'Cámaras de respiración para medición de gases'
-                ]
-            },
-            {
-                id: 2,
-                name: 'Dr. Alfonso Chay Canul',
-                title: 'Profesor Investigador - Nutrición de Rumiantes',
-                specialty: 'Nutrición de Rumiantes en Agroecosistemas Tropicales',
-                education: 'Doctorado en Nutrición de Rumiantes',
-                institution: 'División Académica de Ciencias Agropecuarias - UJAT',
-                experience: 'Especialista en sistemas de producción tropical',
-                publications: '+120 artículos científicos',
-                citations: '+2,873 citaciones',
-                image: 'https://placehold.co/200x200/667eea/ffffff?text=Alfonso+Chay',
-                bio: 'Investigador destacado en nutrición de pequeños rumiantes. Experto en valoración de forrajes tropicales y recursos forrajeros locales. Miembro de cuerpos académicos consolidados en producción de rumiantes.',
-                research: [
-                    'Nutrición de ovinos y caprinos',
-                    'Árboles y arbustos forrajeros tropicales',
-                    'Degradabilidad de forrajes',
-                    'Mitigación de metano con recursos locales'
-                ]
-            },
-            {
-                id: 3,
-                name: 'Dr. Fernando Casanova Lugo',
-                title: 'Profesor Investigador - Sostenibilidad y Nutrición',
-                specialty: 'Agroecosistemas Sostenibles y Nutrición',
-                education: 'Doctorado en Nutrición',
-                institution: 'Instituto Tecnológico de Zona Maya - TecNM',
-                experience: 'Especialista en sistemas silvopastoriles',
-                publications: '+100 artículos científicos',
-                citations: '+1,200 citaciones',
-                image: 'https://placehold.co/200x200/764ba2/ffffff?text=Fernando+Casanova',
-                bio: 'Experto en integración de árboles en sistemas ganaderos y sostenibilidad. Pionero en sistemas silvopastoriles tropicales y recuperación de ecosistemas. Investigador enfocado en cambio climático y ganadería sostenible.',
-                research: [
-                    'Sistemas silvopastoriles tropicales',
-                    'Árboles y arbustos forrajeros',
-                    'Sostenibilidad en ganadería',
-                    'Recuperación de ecosistemas ganaderos'
-                ]
-            },
-            {
-                id: 4,
-                name: 'Dr. Darwin Nicolás Arcos',
-                title: 'Investigador - Nutrición de Precisión',
-                specialty: 'Nutrición de Rumiantes y Modelado Nutricional',
-                education: 'Doctorado en Nutrición',
-                institution: 'Institución de Investigación Pecuaria',
-                experience: 'Especialista en modelos nutricionales avanzados',
-                publications: '+80 artículos científicos',
-                citations: '+650 citaciones',
-                image: 'https://placehold.co/200x200/f39c12/ffffff?text=Darwin+Arcos',
-                bio: 'Investigador especializado en nutrición de precisión y modelado matemático de requerimientos nutricionales. Experto en optimización de dietas con ingredientes locales y sostenibilidad.',
-                research: [
-                    'Nutrición de precisión en rumiantes',
-                    'Modelos de requerimientos nutricionales',
-                    'Optimización de dietas locales',
-                    'Análisis nutricional computarizado'
-                ]
-            },
-            {
-                id: 5,
-                name: 'Dr. Ángel Trinidad Piñeiro',
-                title: 'Profesor Investigador - Nutrición y Sostenibilidad',
-                specialty: 'Nutrición de Rumiantes y Mitigación Ambiental',
-                education: 'Doctorado en Nutrición de Rumiantes',
-                institution: 'Institutos Tecnológicos de Zona Maya - TecNM',
-                experience: 'Líder en investigación de emisiones de metano',
-                publications: '+110 artículos científicos',
-                citations: '+1,500 citaciones',
-                image: 'https://placehold.co/200x200/27ae60/ffffff?text=Angel+Trinidad',
-                bio: 'Referente internacional en mitigación de emisiones de metano entérico en rumiantes. Experto en evaluación de estrategias nutricionales para reducir huella ambiental. Autor de investigaciones pioneras en saponinas y metano.',
-                research: [
-                    'Emisiones de metano entérico',
-                    'Saponinas y mitigación de metano',
-                    'Sistemas sostenibles de producción',
-                    'Valoración de forrajes tropicales'
-                ]
-            }
-        ];
-
-        const NEWS = [
-            {
-                id: 1,
-                title: 'Cámaras respiratorias para medición de metano: innovación de Dr. Canul Solís',
-                category: 'tecnologia',
-                date: '2024-11-12',
-                excerpt: 'Nuevo sistema de bajo costo permite medir emisiones de metano en rumiantes tropicales con precisión.',
-                content: 'El Dr. Jorge Canul Solís ha desarrollado una innovadora cámara de respiración de bajo costo para la medición de metano entérico en rumiantes. Este sistema revolucionario permite cuantificar las emisiones de gases de efecto invernadero en sistemas tropicales, facilitando la investigación y validación de estrategias de mitigación ambiental.',
-                image: 'https://placehold.co/600x300/6b8e23/ffffff?text=Camaras+Respiratorias'
-            },
-            {
-                id: 2,
-                title: 'Investigación pionera: Saponinas de Yucca para reducir metano en ovinos',
-                category: 'nutricion',
-                date: '2024-11-10',
-                excerpt: 'Dr. Ángel Trinidad Piñeiro demuestra efectividad de saponinas naturales en mitigación de metano.',
-                content: 'Los estudios del Dr. Ángel Trinidad Piñeiro han comprobado que la suplementación con saponinas de Yucca schidigera reduce significativamente la producción de metano en ovinos Pelibuey alimentados con Pennisetum purpureum, abriendo nuevas alternativas de mitigación sostenible.',
-                image: 'https://placehold.co/600x300/27ae60/ffffff?text=Saponinas'
-            },
-            {
-                id: 3,
-                title: 'Árboles y arbustos tropicales: nueva estrategia nutricional con Dr. Chay Canul',
-                category: 'sostenibilidad',
-                date: '2024-11-08',
-                excerpt: 'Investigación demuestra potencial de follajes arbóreos para alimentación de rumiantes en secas.',
-                content: 'El Dr. Alfonso Chay Canul lidera investigación mostrando que follajes de árboles como Morus alba, Hibiscus rosa-sinensis y Tithonia diversifolia tienen degradabilidad superior a 750 g/kg MS, convirtiéndose en excelentes fuentes de proteína en épocas de sequía.',
-                image: 'https://placehold.co/600x300/667eea/ffffff?text=Arboles+Forrajeros'
-            },
-            {
-                id: 4,
-                title: 'Sistemas silvopastoriles: oportunidad ambiental con Dr. Casanova Lugo',
-                category: 'sostenibilidad',
-                date: '2024-11-05',
-                excerpt: 'Dr. Fernando Casanova Lugo presenta avances en sistemas silvopastoriles para ganadería regenerativa.',
-                content: 'La investigación del Dr. Fernando Casanova Lugo demuestra que sistemas silvopastoriles integrados con árboles forrajeros no solo mejoran la nutrición animal sino que también incrementan captura de carbono, conservación del agua y biodiversidad en ecosistemas ganaderos tropicales.',
-                image: 'https://placehold.co/600x300/764ba2/ffffff?text=Silvopastoreo'
-            },
-            {
-                id: 5,
-                title: 'Nutrición de precisión optimiza dietas con ingredientes locales',
-                category: 'nutricion',
-                date: '2024-11-02',
-                excerpt: 'Dr. Darwin Nicolás Arcos desarrolla modelos matemáticos para maximizar eficiencia nutricional.',
-                content: 'El trabajo del Dr. Darwin Nicolás Arcos en modelado nutricional permite formular dietas de precisión que utilizan ingredientes regionales disponibles, reduciendo costos de producción en un 22% sin comprometer calidad nutricional.',
-                image: 'https://placehold.co/600x300/f39c12/ffffff?text=Nutricion+Precision'
-            },
-            {
-                id: 6,
-                title: 'Metano entérico en bovinos Bos indicus: nuevos datos de investigación tropical',
-                category: 'sostenibilidad',
-                date: '2024-10-30',
-                excerpt: 'Estudios colaborativos documentan emisiones de metano en razas adaptadas a trópicos.',
-                content: 'Investigación conjunta de los doctores Canul, Piñeiro y colaboradores quantifica mediante cámaras respiratorias que bovinos Bos indicus confinados producen emisiones específicas que difieren de predicciones IPCC, permitiendo mejor valoración ambiental de la ganadería tropical.',
-                image: 'https://placehold.co/600x300/e74c3c/ffffff?text=Metano+Bovinos'
-            },
-            {
-                id: 7,
-                title: 'Taninos condensados: aliados naturales contra metano entérico',
-                category: 'nutricion',
-                date: '2024-10-28',
-                excerpt: 'Investigación identifica plantas forrajeras con potencial de mitigación en regiones tropicales.',
-                content: 'Los estudios colaborativos demuestran que Erythrina americana y Gliricidia sepium, ricas en taninos condensados, reducen emisiones de metano en ovinos mientras mantienen productividad. Estas especies nativas son aliadas clave en sostenibilidad ambiental ganadera.',
-                image: 'https://placehold.co/600x300/556b2f/ffffff?text=Taninos'
-            },
-            {
-                id: 8,
-                title: 'Conferencia Internacional: Nutrición de Rumiantes en Trópicos',
-                category: 'tecnologia',
-                date: '2024-10-25',
-                excerpt: 'Investigadores mexicanos presentan avances a nivel mundial en nutrición sostenible.',
-                content: 'Los doctores Canul Solís, Chay Canul, Casanova Lugo, Piñeiro Vázquez y Arcos participaron en conferencia internacional compartiendo investigaciones sobre nutrición de rumiantes tropicales, con énfasis en sostenibilidad ambiental y eficiencia productiva.',
-                image: 'https://placehold.co/600x300/c0a98f/ffffff?text=Conferencia'
-            }
-        ];
-
-        const SPECIES_DATA = {
-            bovinos: {
-                name: 'Bovinos',
-                animals: {
-                    'Vaca Lechera - Producción Media': {
-                        pb: 14, em: 2.8, enl: 1.5, ca: 0.6, p: 0.4, ms: 60, fiber: 22
-                    },
-                    'Vaca Lechera - Alta Producción': {
-                        pb: 16, em: 3.1, enl: 1.7, ca: 0.7, p: 0.45, ms: 65, fiber: 24
-                    },
-                    'Ternero Recría': {
-                        pb: 12, em: 2.6, enl: 1.4, ca: 0.5, p: 0.35, ms: 55, fiber: 20
-                    }
-                }
-            },
-            ovinos: {
-                name: 'Ovinos',
-                animals: {
-                    'Oveja Lactante': {
-                        pb: 13, em: 2.5, enl: 1.3, ca: 0.6, p: 0.35, ms: 50, fiber: 18
-                    }
-                }
-            },
-            caprinos: {
-                name: 'Caprinos',
-                animals: {
-                    'Cabra Lechera': {
-                        pb: 13, em: 2.6, enl: 1.4, ca: 0.65, p: 0.4, ms: 52, fiber: 20
-                    }
-                }
-            },
-            porcinos: {
-                name: 'Porcinos',
-                animals: {
-                    'Cerdo en Crecimiento': {
-                        pb: 15, em: 3.0, enl: 1.6, ca: 0.7, p: 0.5, ms: 70, fiber: 4
-                    }
-                }
-            }
-        };
-
-        const INGREDIENTS = [
-            { name: 'Maíz Molido', pb: 8.5, em: 3.2, enl: 1.9, ca: 0.02, p: 0.27, ms: 88, fiber: 2 },
-            { name: 'Harina de Soya', pb: 45, em: 2.1, enl: 1.1, ca: 0.2, p: 0.65, ms: 88, fiber: 5 },
-            { name: 'Pasto Alemana (fresco)', pb: 2.5, em: 1.8, enl: 0.8, ca: 0.5, p: 0.25, ms: 18, fiber: 35 },
-            { name: 'Alfalfa (heno)', pb: 16, em: 1.9, enl: 1.0, ca: 1.3, p: 0.3, ms: 85, fiber: 32 },
-            { name: 'Sorgo Molido', pb: 9.5, em: 3.0, enl: 1.8, ca: 0.04, p: 0.28, ms: 87, fiber: 3 },
-            { name: 'Salvado de Trigo', pb: 15, em: 2.0, enl: 1.1, ca: 0.12, p: 0.95, ms: 88, fiber: 10 },
-            { name: 'Fosfato Bicálcico', pb: 0, em: 0, enl: 0, ca: 18, p: 21, ms: 100, fiber: 0 },
-            { name: 'Calhidra', pb: 0, em: 0, enl: 0, ca: 35, p: 0, ms: 100, fiber: 0 }
-        ];
-
-        let dietIngredients = [];
-        let selectedRequirements = {};
-
-        // ============ NAVEGACIÓN ============
-        function switchTab(tabId) {
-            document.querySelectorAll('.tab-content').forEach(tab => {
-                tab.classList.add('hidden');
-            });
-            document.getElementById(tabId)?.classList.remove('hidden');
-            
-            document.querySelectorAll('.nav-link').forEach(link => {
-                link.classList.remove('active');
-            });
-            event.target?.classList.add('active');
-        }
-
-        // ============ RACIONADOR ============
-        function handleSpeciesChange() {
-            const species = document.getElementById('species').value;
-            const animalSelect = document.getElementById('animalType');
-            animalSelect.innerHTML = '<option value="">Seleccionar...</option>';
-            
-            if (species && SPECIES_DATA[species]) {
-                Object.keys(SPECIES_DATA[species].animals).forEach(animal => {
-                    const option = document.createElement('option');
-                    option.value = animal;
-                    option.textContent = animal;
-                    animalSelect.appendChild(option);
-                });
-            }
-        }
-
-        function updateRequirements() {
-            const species = document.getElementById('species').value;
-            const animal = document.getElementById('animalType').value;
-            
-            if (!species || !animal) return;
-            
-            selectedRequirements = SPECIES_DATA[species].animals[animal];
-            
-            const html = Object.entries(selectedRequirements).map(([key, value]) => {
-                const labels = {
-                    pb: 'PB (%)', em: 'EM (Mcal/kg)', enl: 'ENL (Mcal/kg)', 
-                    ca: 'Calcio (%)', p: 'Fósforo (%)', ms: 'MS (%)', fiber: 'Fibra (%)'
-                };
-                return `<div style="display: grid; grid-template-columns: 1fr auto; gap: 0.5rem; margin-bottom: 0.5rem;"><span>${labels[key]}</span><strong style="color: #667eea;">${value.toFixed(2)}</strong></div>`;
-            }).join('');
-            
-            document.getElementById('requirementsDisplay').innerHTML = html;
-        }
-
-        function filterIngredients() {
-            const search = document.getElementById('ingredientSearch').value.toLowerCase();
-            const filtered = INGREDIENTS.filter(ing => ing.name.toLowerCase().includes(search));
-            
-            const html = filtered.map(ing => `
-                <div class="library-item" onclick="addIngredient('${escapeHtml(ing.name)}', ${ing.pb}, ${ing.em}, ${ing.enl}, ${ing.ca}, ${ing.p}, ${ing.ms}, ${ing.fiber})">
-                    <strong>${escapeHtml(ing.name)}</strong>
-                    <small>PB: ${ing.pb.toFixed(1)}% | EM: ${ing.em.toFixed(2)}</small>
-                </div>
-            `).join('');
-            
-            document.getElementById('ingredientLibrary').innerHTML = html || '<div class="library-item" style="cursor: default;">No encontrado</div>';
-        }
-
-        function addIngredient(name, pb, em, enl, ca, p, ms, fiber) {
-            if (!dietIngredients.find(i => i.name === name)) {
-                dietIngredients.push({ name, pb, em, enl, ca, p, ms, fiber, percentage: 5 });
-                renderIngredients();
-            }
-        }
-
-        function renderIngredients() {
-            const total = dietIngredients.reduce((sum, ing) => sum + ing.percentage, 0);
-            
-            const html = dietIngredients.map((ing, idx) => `
-                <div class="ingredient-item">
-                    <span>${escapeHtml(ing.name)}</span>
-                    <input type="number" value="${ing.percentage}" min="0" max="100" step="0.1" onchange="updateIngredient(${idx}, this.value)">
-                    <span style="text-align: center; font-weight: 600; color: #667eea;">%</span>
-                    <span style="text-align: center; font-size: 0.85em; color: #7f8c8d;">PB: ${ing.pb.toFixed(1)}%</span>
-                    <button class="btn btn-danger" onclick="removeIngredient(${idx})">✕</button>
-                </div>
-            `).join('');
-            
-            document.getElementById('ingredientsList').innerHTML = html;
-            document.getElementById('noIngredientsMsg').style.display = dietIngredients.length === 0 ? 'block' : 'none';
-            
-            if (dietIngredients.length > 0) {
-                let status = '';
-                if (Math.abs(total - 100) < 0.1) {
-                    status = '<div class="alert alert-success">✓ Suma = 100%</div>';
-                } else if (total > 100) {
-                    status = `<div class="alert alert-warning">⚠️ Suma: ${total.toFixed(1)}% (exceso)</div>`;
-                } else {
-                    status = `<div class="alert alert-warning">⚠️ Suma: ${total.toFixed(1)}% (falta)</div>`;
-                }
-                document.getElementById('ingredientsList').innerHTML += status;
-            }
-        }
-
-        function updateIngredient(idx, value) {
-            dietIngredients[idx].percentage = parseFloat(value) || 0;
-            renderIngredients();
-        }
-
-        function removeIngredient(idx) {
-            dietIngredients.splice(idx, 1);
-            renderIngredients();
-        }
-
-        function calculateNutrition() {
-            if (!document.getElementById('species').value || !document.getElementById('animalType').value) {
-                alert('Selecciona especie y tipo de animal');
-                return;
-            }
-
-            if (dietIngredients.length === 0) {
-                alert('Agrega al menos un ingrediente');
-                return;
-            }
-
-            const total = dietIngredients.reduce((sum, ing) => sum + ing.percentage, 0);
-            if (Math.abs(total - 100) > 0.5) {
-                alert(`Suma debe ser 100% (actual: ${total.toFixed(1)}%)`);
-                return;
-            }
-
-            const dailyIntake = parseFloat(document.getElementById('dailyIntake').value) || 10;
-            let pb = 0, em = 0, enl = 0, ca = 0, p = 0, ms = 0, fiber = 0;
-
-            dietIngredients.forEach(ing => {
-                const pct = ing.percentage / 100;
-                pb += ing.pb * pct;
-                em += ing.em * pct;
-                enl += ing.enl * pct;
-                ca += ing.ca * pct;
-                p += ing.p * pct;
-                ms += ing.ms * pct;
-                fiber += ing.fiber * pct;
-            });
-
-            generateResults({ pb, em, enl, ca, p, ms, fiber, dailyIntake });
-            document.getElementById('resultsContainer').classList.remove('hidden');
-        }
-
-        function generateResults(data) {
-            const { pb, em, enl, ca, p, ms, fiber, dailyIntake } = data;
-            
-            document.getElementById('nutritionResults').innerHTML = `
-                <table>
-                    <thead><tr><th>Parámetro</th><th>Valor</th><th>Estado</th></tr></thead>
-                    <tbody>
-                        <tr><td>PB (%)</td><td>${pb.toFixed(1)}</td><td><span class="badge badge-success">✓</span></td></tr>
-                        <tr><td>EM (Mcal/kg)</td><td>${em.toFixed(2)}</td><td><span class="badge badge-success">✓</span></td></tr>
-                        <tr><td>Ca:P</td><td>${(ca/p).toFixed(2)}</td><td><span class="badge badge-success">✓</span></td></tr>
-                        <tr><td>Fibra (%)</td><td>${fiber.toFixed(1)}</td><td><span class="badge ${fiber >= 18 && fiber <= 25 ? 'badge-success' : 'badge-warning'}">OK</span></td></tr>
-                    </tbody>
-                </table>
-            `;
-
-            document.getElementById('compositionResults').innerHTML = `
-                <table>
-                    <thead><tr><th>Ingrediente</th><th>%</th><th>kg/día</th><th>PB %</th></tr></thead>
-                    <tbody>
-                        ${dietIngredients.map(ing => `<tr><td>${escapeHtml(ing.name)}</td><td style="text-align:center">${ing.percentage.toFixed(1)}</td><td style="text-align:right">${(ing.percentage/100*dailyIntake).toFixed(2)}</td><td style="text-align:right">${ing.pb.toFixed(1)}</td></tr>`).join('')}
-                    </tbody>
-                </table>
-            `;
-
-            const recs = [];
-            if (fiber < 18) recs.push('⚠️ Fibra baja. Aumenta forrajes');
-            if (fiber > 28) recs.push('💡 Fibra alta. Revisa digestibilidad');
-            if (Math.abs(ca/p - 1.5) > 0.3) recs.push('⚠️ Ratio Ca:P desbalanceado');
-            if (recs.length === 0) recs.push('✅ Formulación óptima');
-
-            document.getElementById('recommendationsResults').innerHTML = recs.map(r => `<div style="padding: 0.75rem; border-bottom: 1px solid #e0e0e0;">${escapeHtml(r)}</div>`).join('');
-        }
-
-        function clearForm() {
-            if (confirm('¿Limpiar formulario?')) {
-                document.getElementById('species').value = '';
-                document.getElementById('animalType').innerHTML = '<option value="">Seleccionar...</option>';
-                document.getElementById('weight').value = '';
-                document.getElementById('dailyIntake').value = '10';
-                dietIngredients = [];
-                renderIngredients();
-                document.getElementById('resultsContainer').classList.add('hidden');
-            }
-        }
-
-        function loadExampleDiet() {
-            document.getElementById('species').value = 'bovinos';
-            handleSpeciesChange();
-            setTimeout(() => {
-                document.getElementById('animalType').value = 'Vaca Lechera - Producción Media';
-                updateRequirements();
-                dietIngredients = [
-                    { name: 'Pasto Alemana (fresco)', pb: 2.5, em: 1.8, enl: 0.8, ca: 0.5, p: 0.25, ms: 18, fiber: 35, percentage: 40 },
-                    { name: 'Maíz Molido', pb: 8.5, em: 3.2, enl: 1.9, ca: 0.02, p: 0.27, ms: 88, fiber: 2, percentage: 30 },
-                    { name: 'Harina de Soya', pb: 45, em: 2.1, enl: 1.1, ca: 0.2, p: 0.65, ms: 88, fiber: 5, percentage: 20 },
-                    { name: 'Fosfato Bicálcico', pb: 0, em: 0, enl: 0, ca: 18, p: 21, ms: 100, fiber: 0, percentage: 10 }
-                ];
-                renderIngredients();
-            }, 100);
-        }
-
-        function printReport() {
-            window.print();
-        }
-
-        function exportPDF() {
-            alert('📄 Exportación a PDF en desarrollo');
-        }
-
-        // ============ PASTOREO ============
-        function calcularRotacion() {
-            const area = parseFloat(document.getElementById('area').value);
-            const animals = parseFloat(document.getElementById('animals').value);
-            const rest = parseFloat(document.getElementById('rest').value);
-
-            if (!area || !animals || !rest) {
-                alert('Completa todos los campos');
-                return;
-            }
-
-            const parcelas = Math.ceil(rest / 1) + 1;
-            const tamano = (area / parcelas).toFixed(2);
-            const carga = Math.ceil(animals / parcelas);
-
-            const html = `
-                Para manejo efectivo, divide tu área en aproximadamente <strong>${parcelas} parcelas</strong>.
-                <br>Tamaño de cada parcela: <strong>${tamano} ha</strong>
-                <br>Carga animal por parcela: <strong>${carga} animales</strong>
-            `;
-
-            document.getElementById('resultado').innerHTML = html;
-            document.getElementById('resultado').classList.remove('hidden');
-        }
-
-        // ============ CONTACTO ============
-        function handleContactSubmit(e) {
-            e.preventDefault();
-            alert('✉️ ¡Mensaje enviado! Nos contactaremos pronto.');
-            e.target.reset();
-        }
-
-        function copyPageUrl() {
-            const el = document.createElement('textarea');
-            el.value = window.location.href;
-            document.body.appendChild(el);
-            el.select();
-            document.execCommand('copy');
-            document.body.removeChild(el);
-            
-            const msg = document.getElementById('copied-message');
-            msg.style.opacity = '1';
-            setTimeout(() => { msg.style.opacity = '0'; }, 3000);
-        }
-
-        function escapeHtml(text) {
-            const map = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' };
-            return text.replace(/[&<>"']/g, m => map[m]);
-        }
-
-        // ============ INICIALIZACIÓN ============
-        function initializeApp() {
-            filterIngredients();
-            renderNews();
-            renderInvestigators();
-            document.getElementById('inicio').classList.remove('hidden');
-        }
-
-        // ============ NOTICIAS ============
-        function renderNews(filter = '') {
-            let newsToShow = NEWS;
-            
-            if (filter) {
-                newsToShow = NEWS.filter(news => news.category === filter);
-            }
-
-            const html = newsToShow.map(news => {
-                const date = new Date(news.date).toLocaleDateString('es-ES', {
-                    year: 'numeric',
-                    month: 'long',
-                    day: 'numeric'
-                });
-
-                const categoryLabels = {
-                    'nutricion': '🍖 Nutrición',
-                    'sostenibilidad': '🌍 Sostenibilidad',
-                    'tecnologia': '💻 Tecnología',
-                    'bienestar': '🐄 Bienestar Animal',
-                    'mercado': '💰 Mercado'
-                };
-
-                return `
-                    <div class="card overflow-hidden hover:shadow-lg transition-shadow">
-                        <img src="${news.image}" alt="${news.title}" class="w-full h-48 object-cover">
-                        <div class="p-6">
-                            <div class="flex items-center justify-between mb-2">
-                                <span class="text-xs font-bold text-white bg-[#667eea] px-3 py-1 rounded-full">
-                                    ${categoryLabels[news.category]}
-                                </span>
-                                <span class="text-xs text-gray-500">${date}</span>
-                            </div>
-                            <h4 class="font-bold text-lg text-[#556b2f] mb-2">${escapeHtml(news.title)}</h4>
-                            <p class="text-gray-600 text-sm mb-4">${escapeHtml(news.excerpt)}</p>
-                            <details class="text-sm text-gray-700">
-                                <summary class="cursor-pointer font-medium text-[#667eea] hover:text-[#764ba2]">Leer más</summary>
-                                <p class="mt-3 pl-2 border-l-2 border-[#667eea]">${escapeHtml(news.content)}</p>
-                            </details>
-                        </div>
-                    </div>
-                `;
-            }).join('');
-
-            document.getElementById('newsList').innerHTML = html || '<div class="col-span-full text-center text-gray-500 py-8">No hay noticias en esta categoría</div>';
-        }
-
-        function filterNews() {
-            const category = document.getElementById('newsCategory').value;
-            renderNews(category);
-        }
-
-        // ============ INVESTIGADORES ============
-        function renderInvestigators() {
-            const html = INVESTIGATORS.map(investigator => `
-                <div class="card p-6 text-center hover:shadow-lg transition-all">
-                    <img src="${investigator.image}" alt="${investigator.name}" 
-                         class="w-28 h-28 rounded-full mx-auto mb-4 object-cover border-4 border-[#667eea]">
-                    <h3 class="font-bold text-lg text-[#556b2f] mb-1">${escapeHtml(investigator.name)}</h3>
-                    <p class="text-sm font-medium text-[#667eea] mb-1">${escapeHtml(investigator.title)}</p>
-                    <p class="text-xs text-gray-500 mb-3">${escapeHtml(investigator.institution)}</p>
-                    
-                    <details class="text-sm text-gray-700 space-y-2">
-                        <summary class="cursor-pointer font-medium text-[#667eea] hover:text-[#764ba2] py-2">Ver perfil completo</summary>
-                        <div class="text-left pt-3 border-t-2 border-gray-200 space-y-3">
-                            <div>
-                                <p class="font-semibold text-gray-700">Biografía</p>
-                                <p class="text-gray-600 text-xs">${escapeHtml(investigator.bio)}</p>
-                            </div>
-                            <div>
-                                <p class="font-semibold text-gray-700">Especialidad</p>
-                                <p class="text-gray-600 text-xs">${escapeHtml(investigator.specialty)}</p>
-                            </div>
-                            <div>
-                                <p class="font-semibold text-gray-700">Educación</p>
-                                <p class="text-gray-600 text-xs">${escapeHtml(investigator.education)}</p>
-                            </div>
-                            <div>
-                                <p class="font-semibold text-gray-700 mb-1">Líneas de Investigación</p>
-                                <ul class="text-gray-600 text-xs space-y-1">
-                                    ${investigator.research.map(r => `<li class="flex items-start"><span class="text-[#667eea] mr-2">▸</span>${escapeHtml(r)}</li>`).join('')}
-                                </ul>
-                            </div>
-                            <div class="grid grid-cols-2 gap-2 text-center bg-gray-50 p-2 rounded">
-                                <div>
-                                    <p class="text-sm font-bold text-[#667eea]">${investigator.publications}</p>
-                                    <p class="text-xs text-gray-500">Publicaciones</p>
-                                </div>
-                                <div>
-                                    <p class="text-sm font-bold text-[#6b8e23]">${investigator.citations}</p>
-                                    <p class="text-xs text-gray-500">Citaciones</p>
-                                </div>
-                            </div>
-                            <div class="text-xs text-gray-600 italic pt-2">
-                                <a href="https://scholar.google.com/citations" target="_blank" class="text-[#667eea] hover:underline">
-                                    Ver perfil Google Scholar →
-                                </a>
-                            </div>
-                        </div>
-                    </details>
-                </div>
-            `).join('');
-
-            document.getElementById('investigadoresList').innerHTML = html;
-        }
-
-        // ============ INICIALIZACIÓN ============
-        document.addEventListener('DOMContentLoaded', () => {
-            initializeApp();
-        });
-    </script>
+    <script src="js/data.js"></script>
+    <script src="js/calculations.js"></script>
+    <script src="js/ui.js"></script>
+    <script src="js/main.js"></script>
 </body>
 </html>
