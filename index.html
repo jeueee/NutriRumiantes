@@ -3,160 +3,613 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NutriRumiantes - Plataforma Integral de Nutrición Ganadera</title>
-    <link rel="stylesheet" href="css/styles.css">
+    <title>🌿 Folia Scan Web</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- OpenCV.js CDN (Librería de Visión por Computadora) -->
+    <script async src="https://docs.opencv.org/4.9.0/opencv.js" onload="onOpenCvReady()"></script>
+    <style>
+        /* Estilo para la fuente Inter y fondo */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f7f9fb;
+        }
+        /* Estilos específicos para las vistas de imagen/canvas */
+        .image-container {
+            min-height: 300px;
+            background-color: #e2e8f0;
+            border: 2px dashed #94a3b8;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            border-radius: 0.5rem;
+        }
+        canvas {
+            max-width: 100%;
+            height: auto;
+        }
+        /* Ocultar el input de archivo */
+        #fileInput {
+            display: none;
+        }
+    </style>
 </head>
-<body>
-    <!-- NAVEGACIÓN -->
-    <nav class="navbar">
-        <div class="nav-container">
-            <div class="logo">
-                🐄 NutriRumiantes
-            </div>
-            <ul class="nav-menu">
-                <li><a onclick="showSection('racionador')" class="nav-link active">Racionador</a></li>
-                <li><a onclick="showSection('calculadora')" class="nav-link">Calculadora</a></li>
-                <li><a onclick="showSection('noticias')" class="nav-link">Noticias</a></li>
-                <li><a onclick="showSection('investigacion')" class="nav-link">Investigación</a></li>
-                <li><a onclick="showSection('contacto')" class="nav-link">Contacto</a></li>
-            </ul>
-        </div>
-    </nav>
+<body class="p-4 md:p-8">
 
-    <div class="container">
-        <!-- SECCIÓN: RACIONADOR -->
-        <section id="racionador" class="section active">
-            <div class="section-header">
-                <h1>🥗 Racionador Nutricional</h1>
-                <p>Diseña dietas balanceadas para tu ganado rumiante</p>
-            </div>
+    <div class="max-w-7xl mx-auto">
+        <h1 class="text-4xl font-extrabold mb-2 text-gray-900 flex items-center">
+            <span class="text-green-700 mr-3">🌿</span> Folia Scan Web
+        </h1>
+        <p class="text-gray-600 mb-6">Herramienta de análisis morfométrico para hojas (Área, Perímetro, Largo y Ancho).</p>
 
-            <div class="racionador-container">
-                <!-- SIDEBAR -->
-                <div class="sidebar">
-                    <h3>Datos del Animal</h3>
-                    <div class="form-group">
-                        <label>Especie</label>
-                        <select id="species" onchange="updateAnimalTypes()">
-                            <option value="">Seleccionar...</option>
-                            <option value="bovinos">Bovinos</option>
-                            <option value="ovinos">Ovinos</option>
-                            <option value="caprinos">Caprinos</option>
-                        </select>
+        <!-- Contenedor Principal: Ajustes y Vistas -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+            <!-- Panel de Control y Ajustes (Columna 1) -->
+            <div class="lg:col-span-1 space-y-6">
+
+                <!-- Área de Calibración -->
+                <div class="bg-white p-6 rounded-xl shadow-lg border border-gray-100">
+                    <h2 class="text-xl font-semibold mb-3 text-green-700">📏 Calibración de Escala</h2>
+                    <p class="text-sm text-gray-500 mb-4">Ingrese la longitud real (en cm) del cuadrado de referencia que acompaña la hoja. Este cuadrado debe ser visible en la imagen.</p>
+                    
+                    <div class="flex items-center space-x-3 mb-4">
+                        <label for="scaleCm" class="block text-sm font-medium text-gray-700">Lado Real (cm)</label>
+                        <input type="number" id="scaleCm" value="1.0" min="0.1" step="0.1"
+                               class="mt-1 block w-20 rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500 p-2 border text-right">
                     </div>
-
-                    <div class="form-group">
-                        <label>Tipo de Animal</label>
-                        <select id="animalType" onchange="updateRequirements()">
-                            <option value="">Seleccionar...</option>
-                        </select>
-                    </div>
-
-                    <div class="form-group">
-                        <label>Peso (kg)</label>
-                        <input type="number" id="weight" placeholder="500" min="50" step="10">
-                    </div>
-
-                    <h3>Requerimientos Nutricionales</h3>
-                    <div id="requirementsList"></div>
-
-                    <h3>Formulación</h3>
-                    <div class="form-group">
-                        <label>Consumo Diario (kg) <span class="label-help">Materia seca</span></label>
-                        <input type="number" id="dailyIntake" value="10" min="1" step="0.5">
-                    </div>
-
-                    <div class="button-group">
-                        <button class="btn btn-primary" onclick="calculateNutrition()">📊 Calcular</button>
-                        <button class="btn btn-secondary" onclick="loadExampleDiet()">📋 Ejemplo</button>
-                        <button class="btn btn-danger" onclick="clearForm()">🗑️ Limpiar</button>
-                    </div>
+                    
+                    <button id="btnCalibrate" onclick="calibrateAndMeasure()" disabled
+                            class="w-full bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition duration-150 shadow-md disabled:bg-gray-400">
+                        📍 Calibrar y Medir Hoja
+                    </button>
+                    <p id="calibrationStatus" class="mt-2 text-sm text-red-500 font-medium">Cargando OpenCV.js...</p>
                 </div>
 
-                <!-- CONTENIDO PRINCIPAL -->
-                <div class="main-content">
-                    <h3>📚 Biblioteca de Ingredientes</h3>
-                    <div class="form-group">
-                        <input type="text" id="ingredientSearch" placeholder="Buscar ingrediente..." 
-                            onkeyup="filterIngredients()">
+                <!-- Panel de Carga de Imagen -->
+                <div class="bg-white p-6 rounded-xl shadow-lg border border-gray-100">
+                    <h2 class="text-xl font-semibold mb-3 text-green-700">🖼️ Carga de Imagen</h2>
+                    <div class="space-y-3">
+                        <button onclick="document.getElementById('fileInput').click()"
+                                class="w-full bg-green-600 text-white py-2 px-4 rounded-lg hover:bg-green-700 transition duration-150 shadow-md">
+                            Subir Imagen Local
+                        </button>
+                        <input type="file" id="fileInput" accept="image/*" onchange="handleFile(event)">
+                        
+                        <button id="btnCamera" onclick="startCamera()"
+                                class="w-full bg-gray-500 text-white py-2 px-4 rounded-lg hover:bg-gray-600 transition duration-150 shadow-md">
+                            Iniciar Cámara Web
+                        </button>
+                        <button id="btnCapture" onclick="captureImage()" disabled
+                                class="w-full bg-indigo-600 text-white py-2 px-4 rounded-lg hover:bg-indigo-700 transition duration-150 shadow-md hidden">
+                            Capturar Foto
+                        </button>
+                        <button id="btnStopCamera" onclick="stopCamera()" disabled
+                                class="w-full bg-red-600 text-white py-2 px-4 rounded-lg hover:bg-red-700 transition duration-150 shadow-md hidden">
+                            Detener Cámara
+                        </button>
+                        <video id="webcamFeed" class="w-full rounded-md mt-4 hidden" autoplay playsinline></video>
                     </div>
-                    <div class="form-group">
-                        <select id="ingredientRegion" onchange="filterIngredients()">
-                            <option value="">Todas las regiones</option>
-                            <option value="local">Local</option>
-                            <option value="importado">Importado</option>
-                        </select>
+                </div>
+            </div>
+            
+            <!-- Vistas y Resultados (Columnas 2 & 3) -->
+            <div class="lg:col-span-2 space-y-6">
+                <!-- Visores de Imagen -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Vista Original -->
+                    <div>
+                        <h3 class="text-lg font-semibold mb-2 text-gray-700">Imagen Original</h3>
+                        <div class="image-container">
+                            <img id="originalImage" class="hidden max-h-[500px]" alt="Imagen Original">
+                            <p id="placeholderText" class="text-gray-500 text-center p-4">Cargue una imagen o use la cámara.</p>
+                        </div>
                     </div>
 
-                    <div id="ingredientLibrary" class="ingredient-library"></div>
-
-                    <h3 style="margin-top: 30px;">🍽️ Ingredientes Seleccionados</h3>
-                    <div id="noIngredientsMsg" class="empty-state">
-                        Selecciona ingredientes de la biblioteca
-                    </div>
-                    <div id="ingredientsList" class="ingredients-list"></div>
-
-                    <div id="resultsContainer" class="hidden">
-                        <h3 style="margin-top: 30px;">📈 Resultados Nutricionales</h3>
-                        <div id="nutritionResults"></div>
-
-                        <h3 style="margin-top: 30px;">📋 Composición de la Dieta</h3>
-                        <div id="compositionResults"></div>
-
-                        <h3 style="margin-top: 30px;">💡 Recomendaciones</h3>
-                        <div id="recommendationsResults"></div>
-
-                        <div class="button-group">
-                            <button class="btn btn-primary" onclick="printReport()">🖨️ Imprimir</button>
-                            <button class="btn btn-primary" onclick="exportPDF()">📄 Exportar PDF</button>
-                            <button class="btn btn-secondary" onclick="optimizeDiet()">✨ Optimizar</button>
+                    <!-- Vista Procesada -->
+                    <div>
+                        <h3 class="text-lg font-semibold mb-2 text-gray-700">Resultado del Análisis</h3>
+                        <div class="image-container">
+                            <canvas id="processedCanvas" class="hidden max-h-[500px]"></canvas>
+                            <p id="canvasPlaceholder" class="text-gray-500 text-center p-4 hidden">Aquí se mostrará la hoja contorneada.</p>
                         </div>
                     </div>
                 </div>
-            </div>
-        </section>
 
-        <!-- OTRAS SECCIONES -->
-        <section id="calculadora" class="section">
-            <div class="section-header">
-                <h1>🧮 Calculadora Nutricional</h1>
+                <!-- Resultados de Medición -->
+                <div class="bg-white p-6 rounded-xl shadow-lg border border-gray-100">
+                    <h2 class="text-xl font-semibold mb-3 text-green-700">📊 Resultados de la Medición</h2>
+                    <div id="results" class="space-y-2 text-gray-700">
+                        <p id="areaResult" class="text-lg font-medium">Área de la Hoja: <span class="font-bold text-gray-500">N/A</span></p>
+                        <p id="perimeterResult" class="text-lg font-medium">Perímetro de la Hoja: <span class="font-bold text-gray-500">N/A</span></p>
+                        <!-- NUEVOS CAMPOS para Largo y Ancho -->
+                        <p id="lengthResult" class="text-lg font-medium">Largo Máximo (L): <span class="font-bold text-gray-500">N/A</span></p>
+                        <p id="widthResult" class="text-lg font-medium">Ancho Máximo (A): <span class="font-bold text-gray-500">N/A</span></p>
+                        <!-- FIN NUEVOS CAMPOS -->
+                        <p id="pixelCm" class="text-sm">Escala (Píxeles/cm): <span class="font-bold text-gray-500">N/A</span></p>
+                        <p id="processingTime" class="text-sm">Tiempo de Proceso: <span class="font-bold text-gray-500">N/A</span></p>
+                    </div>
+                </div>
+                
             </div>
-            <div style="background: white; padding: 30px; border-radius: 10px; box-shadow: 0 10px 30px rgba(0,0,0,0.1);">
-                <p>Sección de calculadora en desarrollo...</p>
-            </div>
-        </section>
-
-        <section id="noticias" class="section">
-            <div class="section-header">
-                <h1>📰 Noticias</h1>
-            </div>
-            <div style="background: white; padding: 30px; border-radius: 10px; box-shadow: 0 10px 30px rgba(0,0,0,0.1);">
-                <p>Noticias agropecuarias en desarrollo...</p>
-            </div>
-        </section>
-
-        <section id="investigacion" class="section">
-            <div class="section-header">
-                <h1>🔬 Investigación</h1>
-            </div>
-            <div style="background: white; padding: 30px; border-radius: 10px; box-shadow: 0 10px 30px rgba(0,0,0,0.1);">
-                <p>Sección de investigación en desarrollo...</p>
-            </div>
-        </section>
-
-        <section id="contacto" class="section">
-            <div class="section-header">
-                <h1>📧 Contacto</h1>
-            </div>
-            <div style="background: white; padding: 30px; border-radius: 10px; box-shadow: 0 10px 30px rgba(0,0,0,0.1);">
-                <p>Formulario de contacto en desarrollo...</p>
-            </div>
-        </section>
+        </div>
+    </div>
+    <!-- Modal de Alerta (Reemplazo de alert()) -->
+    <div id="alertModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden items-center justify-center p-4 z-50">
+        <div class="bg-white rounded-lg shadow-2xl p-6 w-full max-w-sm">
+            <h3 class="text-xl font-bold mb-4 text-red-600">Alerta del Sistema</h3>
+            <p id="alertMessage" class="text-gray-700 mb-6"></p>
+            <button onclick="closeAlertModal()" class="w-full bg-red-600 text-white py-2 rounded-lg hover:bg-red-700 transition">Cerrar</button>
+        </div>
     </div>
 
-    <script src="js/data.js"></script>
-    <script src="js/calculations.js"></script>
-    <script src="js/ui.js"></script>
-    <script src="js/main.js"></script>
+    <script>
+        // =======================================================
+        // CONSTANTES GLOBALES Y VARIABLES DE ESTADO
+        // =======================================================
+        const Config = {
+            SQUARE_ASPECT_RATIO_MIN: 0.85,
+            SQUARE_ASPECT_RATIO_MAX: 1.15,
+            SQUARE_CIRCULARITY_MIN: 0.70,
+            SQUARE_CIRCULARITY_MAX: 0.88,
+            MIN_CONTOUR_AREA_PX: 1000,
+            THRESHOLD_VALUE: 100, // Valor de binarización inicial (ajustable si se usan sliders)
+        };
+
+        let imageBase64 = null; 
+        let stream = null;      
+        let pixelsPerCm = null; 
+        let cvReady = false; // Bandera para indicar si OpenCV.js está cargado
+
+        const $ = (id) => document.getElementById(id);
+        const elements = {
+            originalImage: $('originalImage'),
+            processedCanvas: $('processedCanvas'),
+            webcamFeed: $('webcamFeed'),
+            placeholderText: $('placeholderText'),
+            btnCapture: $('btnCapture'),
+            btnStopCamera: $('btnStopCamera'),
+            btnCamera: $('btnCamera'),
+            btnCalibrate: $('btnCalibrate'),
+            scaleCm: $('scaleCm'),
+            calibrationStatus: $('calibrationStatus'),
+            areaResult: $('areaResult').querySelector('span'),
+            perimeterResult: $('perimeterResult').querySelector('span'),
+            lengthResult: $('lengthResult').querySelector('span'), // Nuevo
+            widthResult: $('widthResult').querySelector('span'),   // Nuevo
+            pixelCm: $('pixelCm').querySelector('span'),
+            processingTime: $('processingTime').querySelector('span'),
+            alertModal: $('alertModal'),
+            alertMessage: $('alertMessage'),
+        };
+
+        /**
+         * Maneja el mensaje de carga de OpenCV.js
+         */
+        function onOpenCvReady() {
+            cvReady = true;
+            elements.btnCalibrate.disabled = false;
+            elements.calibrationStatus.textContent = "✅ OpenCV.js listo. Cargue una imagen.";
+            elements.calibrationStatus.classList.remove('text-red-500');
+            elements.calibrationStatus.classList.add('text-gray-600');
+        }
+        
+        // =======================================================
+        // UTILIDADES Y MODALES
+        // =======================================================
+
+        /**
+         * Muestra un modal de alerta personalizado (reemplazo de alert()).
+         */
+        function showAlertModal(message) {
+            elements.alertMessage.textContent = message;
+            elements.alertModal.classList.remove('hidden');
+            elements.alertModal.classList.add('flex');
+        }
+
+        /**
+         * Cierra el modal de alerta.
+         */
+        function closeAlertModal() {
+            elements.alertModal.classList.add('hidden');
+            elements.alertModal.classList.remove('flex');
+        }
+
+        // =======================================================
+        // FUNCIÓN CENTRAL DE VISIÓN POR COMPUTADORA (OpenCV.js)
+        // =======================================================
+
+        /**
+         * Realiza el procesamiento de imagen, detección de contornos, calibración y medición.
+         * TRADUCCIÓN de la lógica de OpenCV/Python a OpenCV.js
+         * @param {HTMLImageElement} imgElement - La imagen a procesar.
+         * @returns {Object|null} - {areaCm2, perimeterCm, lengthCm, widthCm, calibrationSuccess}
+         */
+        function processImage(imgElement) {
+            if (!cvReady) {
+                showAlertModal("OpenCV.js aún no está cargado. Intente de nuevo en unos segundos.");
+                return null;
+            }
+
+            const startTime = performance.now();
+            let src = null;
+            let gray = null;
+            let binary = null;
+            let contours = null;
+            let hierarchy = null;
+
+            try {
+                // 1. Cargar imagen desde el HTML a una Mat de OpenCV
+                src = cv.imread(imgElement);
+
+                // 2. Preprocesamiento (Escala de grises y Binarización)
+                gray = new cv.Mat();
+                binary = new cv.Mat();
+                cv.cvtColor(src, gray, cv.COLOR_RGBA2GRAY, 0);
+                cv.threshold(gray, binary, Config.THRESHOLD_VALUE, 255, cv.THRESH_BINARY_INV);
+                
+                // 3. Encontrar Contornos
+                contours = new cv.MatVector();
+                hierarchy = new cv.Mat();
+                cv.findContours(binary, contours, hierarchy, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE);
+
+                let referenceSquareContour = null;
+                let leafContour = null;
+                let maxArea = 0; // Para encontrar la hoja (el contorno más grande que no sea el cuadrado)
+
+                // 4. Filtrar y clasificar Contornos (Calibración y Hoja)
+                for (let i = 0; i < contours.size(); ++i) {
+                    let contour = contours.get(i);
+                    let area = cv.contourArea(contour);
+
+                    // Ignorar contornos muy pequeños
+                    if (area < Config.MIN_CONTOUR_AREA_PX) continue;
+
+                    // Aproximar el contorno a un polígono (para buscar cuadrados/rectángulos)
+                    let perimeter = cv.arcLength(contour, true);
+                    let approx = new cv.Mat();
+                    cv.approxPolyDP(contour, approx, 0.04 * perimeter, true);
+                    
+                    // Solo si tiene 4 esquinas (candidato a cuadrado/referencia)
+                    if (approx.rows === 4) {
+                        // Calcular el bounding box para obtener relación de aspecto (para el cuadrado)
+                        let rect = cv.boundingRect(contour);
+                        let aspectRatio = rect.width / rect.height;
+
+                        if (aspectRatio >= Config.SQUARE_ASPECT_RATIO_MIN && aspectRatio <= Config.SQUARE_ASPECT_RATIO_MAX) {
+                            // Se encontró el cuadrado de referencia
+                            referenceSquareContour = contour;
+                        }
+                    }
+
+                    // El contorno más grande que no es el cuadrado de referencia es probablemente la hoja
+                    if (area > maxArea) {
+                         // Si ya encontramos el cuadrado de referencia, no lo re-evaluamos como hoja
+                        if (referenceSquareContour && contour.isEqual(referenceSquareContour)) {
+                             // Do nothing, already processed as square
+                        } else {
+                            maxArea = area;
+                            leafContour = contour;
+                        }
+                    }
+                    approx.delete();
+                }
+
+                let calibrationSuccess = false;
+                let areaCm2 = 0;
+                let perimeterCm = 0;
+                let lengthCm = 0;
+                let widthCm = 0;
+
+                // 5. CÁLCULO DE ESCALA
+                if (referenceSquareContour) {
+                    const rect = cv.minAreaRect(referenceSquareContour);
+                    const box = cv.boxPoints(rect);
+                    const widthPx = cv.norm(box.row(0), box.row(1)); 
+                    const heightPx = cv.norm(box.row(1), box.row(2)); 
+                    
+                    // Usar el promedio de los dos lados para mayor robustez
+                    const sidePx = (widthPx + heightPx) / 2; 
+
+                    const realSideCm = parseFloat(elements.scaleCm.value);
+                    pixelsPerCm = sidePx / realSideCm;
+                    calibrationSuccess = true;
+                    
+                    elements.pixelCm.textContent = `${pixelsPerCm.toFixed(2)} px/cm`;
+                    elements.calibrationStatus.textContent = `✅ Escala calibrada: ${pixelsPerCm.toFixed(2)} px/cm.`;
+                    elements.calibrationStatus.classList.remove('text-red-500');
+                    elements.calibrationStatus.classList.add('text-green-600');
+                } else {
+                    pixelsPerCm = null;
+                    elements.calibrationStatus.textContent = `❌ No se detectó un cuadrado de escala válido.`;
+                    elements.calibrationStatus.classList.remove('text-green-600');
+                    elements.calibrationStatus.classList.add('text-red-500');
+                }
+
+
+                // 6. MEDICIÓN DE LA HOJA
+                if (leafContour && calibrationSuccess && pixelsPerCm) {
+                    // Área y Perímetro
+                    const areaPx = cv.contourArea(leafContour);
+                    const perimeterPx = cv.arcLength(leafContour, true);
+
+                    areaCm2 = areaPx / (pixelsPerCm * pixelsPerCm);
+                    perimeterCm = perimeterPx / pixelsPerCm;
+
+                    // Largo y Ancho (Usando Bounding Box de Área Mínima)
+                    const minRect = cv.minAreaRect(leafContour);
+                    const size = minRect.size;
+                    
+                    // El largo es la dimensión más grande, el ancho la más pequeña.
+                    const size1Px = size.width;
+                    const size2Px = size.height;
+                    
+                    lengthCm = Math.max(size1Px, size2Px) / pixelsPerCm;
+                    widthCm = Math.min(size1Px, size2Px) / pixelsPerCm;
+                    
+                    
+                    // 7. DIBUJAR RESULTADO EN CANVAS
+                    // Dibujar la imagen original y los contornos sobre ella
+                    const dst = src.clone();
+                    
+                    // Dibujar contorno del cuadrado (verde)
+                    if (referenceSquareContour) {
+                        cv.drawContours(dst, new cv.MatVector(referenceSquareContour), 0, [0, 255, 0, 255], 3);
+                    }
+                    
+                    // Dibujar contorno de la hoja (rojo)
+                    if (leafContour) {
+                        cv.drawContours(dst, new cv.MatVector(leafContour), 0, [255, 0, 0, 255], 3);
+                        
+                        // Dibujar el Bounding Box de la hoja (rectángulo rotado)
+                        let vertices = cv.boxPoints(minRect);
+                        let corners = cv.matFromArray(4, 1, cv.CV_32FC2, [vertices.data32F[0], vertices.data32F[1], vertices.data32F[2], vertices.data32F[3], vertices.data32F[4], vertices.data32F[5], vertices.data32F[6], vertices.data32F[7]]);
+                        cv.polylines(dst, [corners], true, [255, 255, 0, 255], 2, cv.LINE_AA);
+                        corners.delete();
+                    }
+
+                    // Mostrar el resultado
+                    cv.imshow(elements.processedCanvas, dst);
+                    dst.delete();
+                }
+
+                const endTime = performance.now();
+                const processingTime = (endTime - startTime).toFixed(2);
+                elements.processingTime.textContent = `${processingTime} ms`;
+
+                return { areaCm2, perimeterCm, lengthCm, widthCm, calibrationSuccess };
+
+            } catch (e) {
+                console.error("Error en el procesamiento de OpenCV:", e);
+                showAlertModal("Error de Visión por Computadora: Asegúrese de que la hoja y el cuadrado de referencia sean fácilmente separables del fondo. " + e.message);
+                
+                // Limpiar resultados y canvas
+                elements.processedCanvas.classList.add('hidden');
+                elements.calibrationStatus.textContent = `❌ Error de procesamiento.`;
+                elements.areaResult.textContent = "N/A";
+                elements.perimeterResult.textContent = "N/A";
+                elements.lengthResult.textContent = "N/A";
+                elements.widthResult.textContent = "N/A";
+                
+                return null;
+            } finally {
+                // Liberar memoria de OpenCV
+                if (src) src.delete();
+                if (gray) gray.delete();
+                if (binary) binary.delete();
+                if (contours) contours.delete();
+                if (hierarchy) hierarchy.delete();
+            }
+        }
+
+        /**
+         * Función principal que inicia la calibración y medición.
+         */
+        function calibrateAndMeasure() {
+            if (!cvReady) {
+                 showAlertModal("OpenCV.js aún no está cargado. Intente de nuevo en unos segundos.");
+                 return;
+            }
+            if (!imageBase64) {
+                elements.calibrationStatus.textContent = "❌ Por favor, cargue o capture una imagen primero.";
+                elements.calibrationStatus.classList.remove('text-green-600');
+                elements.calibrationStatus.classList.add('text-red-500');
+                return;
+            }
+
+            const imgElement = elements.originalImage;
+            const realSideCm = parseFloat(elements.scaleCm.value);
+            
+            if (isNaN(realSideCm) || realSideCm <= 0) {
+                elements.calibrationStatus.textContent = "❌ Ingrese un valor de lado real (cm) válido (> 0).";
+                elements.calibrationStatus.classList.remove('text-green-600');
+                elements.calibrationStatus.classList.add('text-red-500');
+                return;
+            }
+
+            // Ocultar placeholder del canvas y mostrar canvas
+            $('canvasPlaceholder').classList.add('hidden');
+            elements.processedCanvas.classList.remove('hidden');
+
+            const result = processImage(imgElement);
+
+            if (result && result.calibrationSuccess) {
+                elements.areaResult.textContent = `${result.areaCm2.toFixed(2)} cm²`;
+                elements.perimeterResult.textContent = `${result.perimeterCm.toFixed(2)} cm`;
+                elements.lengthResult.textContent = `${result.lengthCm.toFixed(2)} cm`; // Display Largo
+                elements.widthResult.textContent = `${result.widthCm.toFixed(2)} cm`;   // Display Ancho
+            } else {
+                // Si la calibración falla
+                elements.areaResult.textContent = "N/A";
+                elements.perimeterResult.textContent = "N/A";
+                elements.lengthResult.textContent = "N/A";
+                elements.widthResult.textContent = "N/A";
+            }
+        }
+
+        // =======================================================
+        // MANEJO DE IMAGEN Y CÁMARA
+        // =======================================================
+
+        /**
+         * Carga una imagen del disco y la muestra en el visor.
+         */
+        function handleFile(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                imageBase64 = e.target.result;
+                displayImage(imageBase64);
+            };
+            reader.readAsDataURL(file);
+        }
+
+        /**
+         * Muestra la imagen cargada/capturada en el elemento de imagen original.
+         */
+        function displayImage(base64Data) {
+            elements.placeholderText.classList.add('hidden');
+            elements.originalImage.src = base64Data;
+            elements.originalImage.classList.remove('hidden');
+
+            // Limpiar canvas anterior
+            elements.processedCanvas.classList.add('hidden');
+            const ctx = elements.processedCanvas.getContext('2d');
+            ctx.clearRect(0, 0, elements.processedCanvas.width, elements.processedCanvas.height);
+
+            elements.areaResult.textContent = "N/A";
+            elements.perimeterResult.textContent = "N/A";
+            elements.lengthResult.textContent = "N/A";
+            elements.widthResult.textContent = "N/A";
+            elements.pixelCm.textContent = "N/A";
+            elements.calibrationStatus.textContent = cvReady ? "Listo para calibrar." : "Cargando OpenCV.js...";
+            elements.calibrationStatus.classList.add('text-red-500');
+        }
+
+        /**
+         * Inicia el flujo de la cámara web.
+         */
+        async function startCamera() {
+            try {
+                stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } });
+                elements.webcamFeed.srcObject = stream;
+                elements.webcamFeed.classList.remove('hidden');
+                elements.placeholderText.classList.add('hidden');
+                elements.originalImage.classList.add('hidden');
+
+                elements.btnCamera.classList.add('hidden');
+                elements.btnCapture.classList.remove('hidden');
+                elements.btnStopCamera.classList.remove('hidden');
+                elements.btnCapture.disabled = false;
+                elements.btnStopCamera.disabled = false;
+            } catch (err) {
+                showAlertModal("Error al acceder a la cámara. Asegúrese de tener permisos y una cámara conectada.");
+                console.error("Error al acceder a la cámara: ", err);
+            }
+        }
+
+        /**
+         * Detiene el flujo de la cámara web.
+         */
+        function stopCamera() {
+            if (stream) {
+                stream.getTracks().forEach(track => track.stop());
+                stream = null;
+            }
+            elements.webcamFeed.classList.add('hidden');
+            elements.placeholderText.classList.remove('hidden');
+            elements.btnCamera.classList.remove('hidden');
+            elements.btnCapture.classList.add('hidden');
+            elements.btnStopCamera.classList.add('hidden');
+        }
+
+        /**
+         * Captura un frame del video y lo convierte en una imagen para procesar.
+         */
+        function captureImage() {
+            const video = elements.webcamFeed;
+            const canvas = document.createElement('canvas');
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+            const base64Data = canvas.toDataURL('image/jpeg');
+            imageBase64 = base64Data;
+            
+            stopCamera(); // Detiene la cámara después de capturar
+            displayImage(base64Data);
+        }
+
+        // =======================================================
+        // FUNCIONALIDAD DE VISIÓN AVANZADA (OPCIONAL: API GEMINI)
+        // =======================================================
+
+        /**
+         * (Opcional) Análisis de visión por computadora más allá de la segmentación simple
+         * (ej. identificar la especie de hoja, o dar un diagnóstico).
+         */
+        async function analyzeWithGemini() {
+            if (!imageBase64) return;
+            
+            // Extraer solo los datos Base64 de la imagen
+            const base64Image = imageBase64.split(',')[1];
+            const prompt = "Identifica esta hoja, incluyendo la especie si es posible, y estima su estado de salud general basado en el color y la textura. Responde de forma concisa en español.";
+            
+            const payload = {
+                contents: [
+                    {
+                        role: "user",
+                        parts: [
+                            { text: prompt },
+                            {
+                                inlineData: {
+                                    mimeType: "image/jpeg",
+                                    data: base64Image
+                                }
+                            }
+                        ]
+                    }
+                ],
+            };
+            
+            const apiKey = ""; 
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`;
+
+            try {
+                // Simulación de Exponential Backoff para reintentos
+                let response = null;
+                for (let i = 0; i < 3; i++) {
+                    const fetchResponse = await fetch(apiUrl, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+                    
+                    if (fetchResponse.ok) {
+                        response = await fetchResponse.json();
+                        break;
+                    }
+                    if (i < 2) await new Promise(resolve => setTimeout(resolve, Math.pow(2, i) * 1000)); // Espera 1s, 2s, 4s
+                }
+
+                if (!response) {
+                    throw new Error("Fallo la conexión con la API de Gemini después de varios intentos.");
+                }
+
+                const textResult = response.candidates?.[0]?.content?.parts?.[0]?.text || "No se pudo obtener el análisis.";
+                
+                showAlertModal("Análisis de Hoja (Gemini):\n\n" + textResult); 
+
+            } catch (error) {
+                console.error("Error al llamar a la API de Gemini:", error);
+                showAlertModal("Hubo un error al realizar el análisis avanzado con IA.");
+            }
+        }
+        
+    </script>
 </body>
 </html>
