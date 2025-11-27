@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 #container {
     position: relative; /* Es necesario para que el canvas se posicione relativo al contenedor */
     display: inline-block;
@@ -18,3 +19,1101 @@
     /* El canvas debe estar encima */
     z-index: 2; 
 }
+=======
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>📷 Contorno en Tiempo Real - Visión General</title>
+    <script async src="https://docs.opencv.org/4.9.0/opencv.js" onload="onOpenCvReady()"></script>
+    <style>
+        /* ======================================================= */
+        /* OPTIMIZACIÓN SIN SCROLL (Viewport Height Layout) */
+        /* ======================================================= */
+        html, body {
+            height: 100%; /* Ocupa el 100% de la altura de la ventana */
+            overflow: hidden; /* EVITA EL SCROLL GLOBAL */
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+            background-color: #f7f9fb;
+            color: #1f2937;
+            line-height: 1.6;
+            padding: 1rem;
+            display: flex; /* Hace del body un contenedor flex */
+            flex-direction: column; /* Apila los elementos verticalmente */
+        }
+
+        @media (min-width: 768px) {
+            body {
+                padding: 1.5rem; /* Reducir padding para más espacio */
+            }
+        }
+
+        .container {
+            max-width: 1280px;
+            margin: 0 auto;
+            flex-grow: 1; /* Hace que el contenedor tome el espacio vertical restante */
+            display: flex;
+            flex-direction: column;
+            overflow: hidden; /* Esconde el posible overflow interno */
+        }
+        
+        /* Grid principal: distribuye el espacio horizontal y vertical */
+        .grid-main {
+            flex-grow: 1; /* Toma todo el espacio vertical debajo del encabezado */
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+            overflow: hidden;
+            padding-bottom: 0.5rem; /* Pequeño espacio inferior */
+        }
+
+        @media (min-width: 1024px) {
+            .grid-main {
+                grid-template-columns: 1fr 2fr; /* Lado izquierdo (Controles) 1, Lado derecho (Vistas) 2 */
+            }
+        }
+
+        /* Columna de Controles (Izquierda) */
+        .space-y-6 {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            overflow-y: auto; /* Permite scroll solo a los controles si no caben */
+            padding-right: 5px; /* Pequeño espacio para el scrollbar */
+        }
+        
+        /* Sección de Vistas y Resultados (Derecha) */
+        .results-section {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            flex-grow: 1;
+            overflow: hidden;
+        }
+
+        /* Grid para las dos Vistas (Input y Procesado) */
+        .grid-views {
+            flex-grow: 1; /* Ocupa todo el espacio disponible en la columna derecha */
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1rem;
+            overflow: hidden;
+        }
+
+        @media (min-width: 768px) {
+            .grid-views {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+        
+        /* Contenedor de cada vista individual (Input y Canvas) */
+        .grid-views > div {
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        
+        .grid-views > div h3 {
+            flex-shrink: 0; /* Título fijo */
+            margin-bottom: 0.5rem;
+        }
+
+        /* Contenedor de la Imagen/Video/Canvas */
+        .image-container {
+            flex-grow: 1; /* Ocupa el espacio restante en la vista */
+            min-height: 50px; /* Reducir min-height */
+            background-color: #e2e8f0;
+            border: 2px dashed #94a3b8;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            border-radius: 0.5rem;
+            position: relative;
+        }
+        
+        /* Panel de Resultados: debe tener altura fija */
+        .results-section .panel {
+            flex-shrink: 0;
+        }
+        
+        /* ======================================================= */
+        /* ESTILOS GENERALES (Mantenidos) */
+        /* ======================================================= */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        h1 {
+            font-size: 2.25rem;
+            font-weight: 800;
+            margin-bottom: 0.5rem;
+            color: #111827;
+            display: flex;
+            align-items: center;
+        }
+
+        h1 span {
+            margin-right: 0.75rem;
+        }
+
+        h1 .text-green {
+            color: #15803d;
+        }
+
+        .subtitle {
+            color: #4b5563;
+            margin-bottom: 1.5rem;
+            flex-shrink: 0;
+        }
+
+        .panel {
+            background-color: white;
+            padding: 1.5rem;
+            border-radius: 0.75rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            border: 1px solid #f3f4f6;
+        }
+
+        .panel h2 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+            color: #15803d;
+        }
+
+        .panel h3 {
+            font-size: 1.125rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: #374151;
+        }
+
+        .space-y-4 {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .space-y-3 {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .form-group.horizontal {
+            flex-direction: row;
+            align-items: center;
+        }
+
+        label {
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: #374151;
+        }
+
+        input[type="number"],
+        input[type="range"],
+        select {
+            padding: 0.5rem;
+            border: 1px solid #d1d5db;
+            border-radius: 0.375rem;
+            font-size: 0.875rem;
+            transition: all 0.15s ease;
+        }
+
+        input[type="number"],
+        select {
+            background-color: white;
+        }
+
+        input[type="number"]:focus,
+        input[type="range"]:focus,
+        select:focus {
+            outline: none;
+            border-color: #22c55e;
+            box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.1);
+        }
+
+        input[type="range"] {
+            cursor: pointer;
+            width: 100%;
+        }
+
+        input[type="number"].w-20 {
+            width: 5rem;
+            text-align: right;
+        }
+
+        select {
+            width: 100%;
+            cursor: pointer;
+        }
+
+        button {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 0.5rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            font-size: 0.875rem;
+            width: 100%;
+        }
+
+        .btn-blue {
+            background-color: #2563eb;
+            color: white;
+        }
+
+        .btn-blue:hover:not(:disabled) {
+            background-color: #1d4ed8;
+        }
+
+        .btn-blue:disabled {
+            background-color: #9ca3af;
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+
+        .btn-green {
+            background-color: #16a34a;
+            color: white;
+        }
+
+        .btn-green:hover {
+            background-color: #15803d;
+        }
+
+        .btn-indigo {
+            background-color: #4f46e5;
+            color: white;
+        }
+
+        .btn-indigo:hover {
+            background-color: #4338ca;
+        }
+
+        .btn-red {
+            background-color: #dc2626;
+            color: white;
+        }
+
+        .btn-red:hover {
+            background-color: #b91c1c;
+        }
+
+        .btn-red:disabled {
+            background-color: #9ca3af;
+            cursor: not-allowed;
+            display: none;
+        }
+
+        .btn-red.visible {
+            display: block;
+        }
+        
+        canvas, #originalImage, #webcamFeed {
+            max-width: 100%;
+            max-height: 100%; /* Ajustar al 100% del contenedor */
+            width: auto;
+            height: auto;
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            margin: auto;
+        }
+        
+        .image-container p {
+            color: #6b7280;
+            text-align: center;
+            padding: 1rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        #fileInput {
+            display: none;
+        }
+
+        .performance-badge {
+            position: absolute;
+            top: 2px;
+            right: 2px;
+            background-color: rgba(0, 0, 0, 0.7);
+            color: #4ade80;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: bold;
+            z-index: 10;
+        }
+
+        .performance-badge.hidden {
+            display: none;
+        }
+
+        .results-grid {
+            display: flex;
+            flex-wrap: wrap; /* Permite que los resultados fluyan en una línea */
+            gap: 0.5rem 1.5rem;
+        }
+        .results-grid p {
+             min-width: 45%; /* Asegura que al menos 2 quepan por fila en pantallas medias */
+        }
+
+        /* Modal */
+        .modal {
+            position: fixed;
+            inset: 0;
+            background-color: rgba(75, 85, 99, 0.5);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+            z-index: 50;
+        }
+
+        .modal.show {
+            display: flex;
+        }
+
+        .modal-content {
+            background-color: white;
+            border-radius: 0.5rem;
+            box-shadow: 0 20px 25px rgba(0,0,0,0.15);
+            padding: 1.5rem;
+            width: 100%;
+            max-width: 28rem;
+        }
+
+        .modal-content h3 {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: #dc2626;
+        }
+
+        .modal-content p {
+            color: #374151;
+            margin-bottom: 1.5rem;
+        }
+
+        .modal-content button {
+            margin-top: 0;
+        }
+
+        /* Status messages */
+        .status-message {
+            margin-top: 0.5rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+
+        /* Visibility utilities */
+        .hidden {
+            display: none !important;
+        }
+    </style>
+</head>
+<body class="p-4 md:p-8">
+
+    <div class="container">
+        <h1>
+            <span class="text-green">📷</span> Contorno en Tiempo Real (Visión General)
+        </h1>
+        <p class="subtitle">Detecta y contornea el objeto más grande en el *stream* de la cámara.</p>
+
+        <div class="grid-main">
+
+            <div class="space-y-6">
+
+                <div class="panel">
+                    <h2>📏 Calibración de Escala</h2>
+                    <p class="text-sm text-gray-500" style="margin-bottom: 1rem;">Opcional: Coloque un cuadrado de referencia para obtener métricas reales (cm).</p>
+                    
+                    <div class="form-group horizontal" style="margin-bottom: 1rem;">
+                        <label for="scaleCm">Lado Real (cm)</label>
+                        <input type="number" id="scaleCm" value="1.0" min="0.1" step="0.1" class="w-20">
+                    </div>
+                    
+                    <button id="btnMeasure" onclick="measureFinalImage()" disabled class="btn-blue">
+                        📐 Capturar y Medir
+                    </button>
+                    <p id="calibrationStatus" class="status-message text-red-500">Cargando OpenCV.js...</p>
+                </div>
+
+                <div class="panel">
+                    <h2 style="color: #4f46e5;">⚙️ Optimización y Detección</h2>
+                    
+                    <div class="space-y-4">
+                        <div class="form-group">
+                            <label for="videoResolution">Resolución Video</label>
+                            <select id="videoResolution">
+                                <option value="320">320x240 (Muy Rápido)</option>
+                                <option value="480" selected>480x360 (Rápido)</option>
+                                <option value="640">640x480 (Normal)</option>
+                                <option value="1024">1024x768 (Detalle)</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="thresholdSlider">
+                                Umbral Binarización: <span id="thresholdValue">100</span>
+                            </label>
+                            <input type="range" id="thresholdSlider" min="0" max="255" value="100" step="5">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="skipFrames">
+                                Procesar 1 de cada <span id="skipFramesValue">1</span> frames
+                            </label>
+                            <input type="range" id="skipFrames" min="1" max="5" value="1" step="1">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="panel">
+                    <h2>📸 Opciones de Entrada</h2>
+                    <div class="space-y-3">
+                        <button onclick="document.getElementById('fileInput').click()" class="btn-green">
+                            Subir Imagen Local
+                        </button>
+                        <input type="file" id="fileInput" accept="image/*" onchange="handleFile(event)">
+                        
+                        <button id="btnCamera" onclick="startCamera()" class="btn-indigo">
+                            Iniciar Cámara
+                        </button>
+                        <button id="btnStopCamera" onclick="stopCamera()" disabled class="btn-red">
+                            Detener Cámara
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="results-section">
+                <div class="grid-views">
+                    <div>
+                        <h3>Fuente de Entrada</h3>
+                        <div class="image-container">
+                            <video id="webcamFeed" class="hidden" autoplay playsinline></video>
+                            <img id="originalImage" class="hidden" alt="Imagen Original">
+                            <p id="placeholderText">Cargue una imagen o inicie la cámara.</p>
+                        </div>
+                    </div>
+
+                    <div>
+                        <h3>Contorno en Tiempo Real</h3>
+                        <div class="image-container">
+                            <canvas id="processedCanvas" class="hidden"></canvas>
+                            <div id="fpsCounter" class="performance-badge hidden">60 FPS</div>
+                            <p id="canvasPlaceholder">Aquí se mostrará el procesamiento en vivo.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="panel">
+                    <h2>📊 Resultados de la Medición Final</h2>
+                    <p class="text-sm text-gray-500" style="margin-bottom: 0.5rem;">Las métricas en cm requieren la detección de un cuadrado de referencia.</p>
+                    <div id="results" class="results-grid">
+                        <p id="areaResult" class="text-lg font-medium">Área del Objeto: <span class="font-bold text-gray-500">N/A</span></p>
+                        <p id="perimeterResult" class="text-lg font-medium">Perímetro del Objeto: <span class="font-bold text-gray-500">N/A</span></p>
+                        <p id="lengthResult" class="text-lg font-medium">Largo Máximo (L): <span class="font-bold text-gray-500">N/A</span></p>
+                        <p id="widthResult" class="text-lg font-medium">Ancho Máximo (A): <span class="font-bold text-gray-500">N/A</span></p>
+                        <p id="pixelCm" class="text-sm">Escala (Píxeles/cm): <span class="font-bold text-gray-500">N/A</span></p>
+                        <p id="processingTime" class="text-sm">Tiempo de Proceso: <span class="font-bold text-gray-500">N/A</span></p>
+                    </div>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+    <div id="alertModal" class="modal">
+        <div class="modal-content">
+            <h3>Alerta del Sistema</h3>
+            <p id="alertMessage"></p>
+            <button onclick="closeAlertModal()" class="btn-red">Cerrar</button>
+        </div>
+    </div>
+
+    <script>
+        // =======================================================
+        // CONSTANTES GLOBALES Y VARIABLES DE ESTADO
+        // =======================================================
+        const Config = {
+            // Razón de aspecto para detectar un cuadrado de calibración
+            SQUARE_ASPECT_RATIO_MIN: 0.85, 
+            SQUARE_ASPECT_RATIO_MAX: 1.15,
+            // Área mínima del contorno para ser considerado (en píxeles)
+            MIN_CONTOUR_AREA_PX: 1000, 
+        };
+
+        let imageBase64 = null; 
+        let stream = null;      
+        let pixelsPerCm = null; 
+        let cvReady = false; 
+        let streaming = false;
+        let lastFrame = null; // Para guardar el último frame procesado para la medición
+        let frameCounter = 0;
+        let fpsCounter = 0;
+        let lastFpsTime = Date.now();
+
+        const $ = (id) => document.getElementById(id);
+        const elements = {
+            originalImage: $('originalImage'),
+            processedCanvas: $('processedCanvas'),
+            webcamFeed: $('webcamFeed'),
+            placeholderText: $('placeholderText'),
+            btnMeasure: $('btnMeasure'),
+            btnCamera: $('btnCamera'),
+            btnStopCamera: $('btnStopCamera'),
+            scaleCm: $('scaleCm'),
+            calibrationStatus: $('calibrationStatus'),
+            areaResult: $('areaResult').querySelector('span'),
+            perimeterResult: $('perimeterResult').querySelector('span'),
+            lengthResult: $('lengthResult').querySelector('span'), 
+            widthResult: $('widthResult').querySelector('span'),   
+            pixelCm: $('pixelCm').querySelector('span'),
+            processingTime: $('processingTime').querySelector('span'),
+            alertModal: $('alertModal'),
+            alertMessage: $('alertMessage'),
+            canvasPlaceholder: $('canvasPlaceholder'),
+            thresholdSlider: $('thresholdSlider'),
+            thresholdValue: $('thresholdValue'),
+            skipFrames: $('skipFrames'),
+            skipFramesValue: $('skipFramesValue'),
+            videoResolution: $('videoResolution'),
+            fpsCounter: $('fpsCounter')
+        };
+
+        // Inicializar listeners de optimización
+        elements.thresholdSlider.addEventListener('input', (e) => {
+            elements.thresholdValue.textContent = e.target.value;
+        });
+
+        elements.skipFrames.addEventListener('input', (e) => {
+            elements.skipFramesValue.textContent = e.target.value;
+        });
+
+        /**
+         * Maneja el mensaje de carga de OpenCV.js
+         */
+        function onOpenCvReady() {
+            cvReady = true;
+            elements.btnMeasure.disabled = false;
+            elements.calibrationStatus.textContent = "✅ OpenCV.js listo. Inicie la cámara o cargue una imagen.";
+            elements.calibrationStatus.classList.remove('text-red-500');
+            elements.calibrationStatus.classList.add('text-gray-600');
+        }
+        
+        // =======================================================
+        // UTILIDADES Y MODALES
+        // =======================================================
+
+        /** Muestra un modal de alerta personalizado */
+        function showAlertModal(message) {
+            elements.alertMessage.textContent = message;
+            elements.alertModal.classList.add('show');
+        }
+
+        /** Cierra el modal de alerta. */
+        function closeAlertModal() {
+            elements.alertModal.classList.remove('show');
+        }
+
+        /**
+         * Actualiza el contador de FPS
+         */
+        function updateFpsCounter() {
+            fpsCounter++;
+            const now = Date.now();
+            const elapsed = now - lastFpsTime;
+            
+            if (elapsed >= 1000) {
+                const fps = Math.round(fpsCounter * 1000 / elapsed);
+                elements.fpsCounter.textContent = `${fps} FPS`;
+                fpsCounter = 0;
+                lastFpsTime = now;
+            }
+        }
+
+        /**
+         * Inicializa la imagen y el canvas de resultados.
+         */
+        function initializeCanvas(srcMat) {
+            const width = srcMat.cols;
+            const height = srcMat.rows;
+            
+            elements.processedCanvas.width = width;
+            elements.processedCanvas.height = height;
+            
+            // Los elementos de visualización se ajustan automáticamente por CSS
+            // para llenar el espacio, pero mantenemos esta parte para asegurar
+            // que el canvas tenga la resolución correcta.
+            
+            return elements.processedCanvas;
+        }
+
+        // =======================================================
+        // FUNCIÓN CENTRAL DE VISIÓN POR COMPUTADORA (OpenCV.js)
+        // =======================================================
+
+        /**
+         * Realiza el procesamiento de imagen con máxima eficiencia
+         */
+        function processImage(src, canvasOutput, calculateMetrics = false) {
+            
+            const startTime = performance.now();
+            let gray = null;
+            let binary = null;
+            let contours = null;
+            let hierarchy = null;
+            let dst = null;
+            let largestContour = null;
+
+            try {
+                const thresholdValue = parseInt(elements.thresholdSlider.value);
+                
+                // Preprocesamiento (Escala de grises y Binarización INVERSA)
+                gray = new cv.Mat();
+                binary = new cv.Mat();
+                cv.cvtColor(src, gray, cv.COLOR_RGBA2GRAY, 0);
+                cv.threshold(gray, binary, thresholdValue, 255, cv.THRESH_BINARY_INV);
+                
+                // Encontrar Contornos
+                contours = new cv.MatVector();
+                hierarchy = new cv.Mat();
+                cv.findContours(binary, contours, hierarchy, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE);
+
+                let referenceSquareContour = null;
+                let maxArea = 0;
+
+                // Filtrar y clasificar Contornos: Buscar cuadrado de referencia y el contorno más grande (el objeto)
+                for (let i = 0; i < contours.size(); ++i) {
+                    let contour = contours.get(i);
+                    let area = cv.contourArea(contour);
+
+                    if (area < Config.MIN_CONTOUR_AREA_PX) continue;
+
+                    let perimeter = cv.arcLength(contour, true);
+                    let approx = new cv.Mat();
+                    cv.approxPolyDP(contour, approx, 0.04 * perimeter, true);
+                    
+                    // 1. Detectar cuadrado de calibración (4 vértices y razón de aspecto cercana a 1)
+                    if (approx.rows === 4) {
+                        let rect = cv.boundingRect(contour);
+                        let aspectRatio = rect.width / rect.height;
+
+                        if (aspectRatio >= Config.SQUARE_ASPECT_RATIO_MIN && aspectRatio <= Config.SQUARE_ASPECT_RATIO_MAX) {
+                            // Este es el candidato a cuadrado de referencia
+                            referenceSquareContour = contour;
+                        }
+                    }
+
+                    // 2. Detectar el objeto principal (contorno más grande)
+                    if (area > maxArea) {
+                        maxArea = area;
+                        largestContour = contour; // Guardar la referencia del Mat
+                    }
+                    approx.delete();
+                }
+                
+                // Si el contorno más grande es el cuadrado de referencia, buscamos el segundo más grande
+                if (largestContour && referenceSquareContour && largestContour.isEqual(referenceSquareContour)) {
+                    maxArea = 0;
+                    largestContour = null; 
+                    for (let i = 0; i < contours.size(); ++i) {
+                        let contour = contours.get(i);
+                        let area = cv.contourArea(contour);
+                        // Ignorar contornos pequeños o el cuadrado de referencia
+                        if (area < Config.MIN_CONTOUR_AREA_PX || contour.isEqual(referenceSquareContour)) continue;
+
+                        if (area > maxArea) {
+                            maxArea = area;
+                            largestContour = contour; 
+                        }
+                    }
+                }
+
+
+                let calibrationSuccess = false;
+                let areaCm2 = 'N/A';
+                let perimeterCm = 'N/A';
+                let lengthCm = 'N/A';
+                let widthCm = 'N/A';
+
+                // CÁLCULO DE ESCALA
+                if (referenceSquareContour) {
+                    const rect = cv.minAreaRect(referenceSquareContour);
+                    const size = rect.size;
+                    const sidePx = (size.width + size.height) / 2;
+                    
+                    const realSideCm = parseFloat(elements.scaleCm.value);
+                    pixelsPerCm = sidePx / realSideCm;
+                    calibrationSuccess = true;
+                    
+                    if (calculateMetrics || streaming) {
+                        elements.pixelCm.textContent = `${pixelsPerCm.toFixed(2)} px/cm`;
+                        elements.calibrationStatus.textContent = `✅ Escala: ${pixelsPerCm.toFixed(2)} px/cm`;
+                        elements.calibrationStatus.classList.remove('text-red-500');
+                        elements.calibrationStatus.classList.add('text-green-600');
+                    }
+                } else if (calculateMetrics || streaming) {
+                    pixelsPerCm = null;
+                    elements.pixelCm.textContent = `N/A`;
+                    elements.calibrationStatus.textContent = `❌ Cuadrado de escala no detectado`;
+                    elements.calibrationStatus.classList.remove('text-green-600');
+                    elements.calibrationStatus.classList.add('text-red-500');
+                }
+
+                // DIBUJO Y MEDICIÓN DEL OBJETO PRINCIPAL
+                dst = src.clone();
+
+                if (largestContour) {
+                    // Dibujar contorno del objeto (rojo)
+                    cv.drawContours(dst, new cv.MatVector(largestContour), 0, [255, 0, 0, 255], 3);
+
+                    if (calculateMetrics) {
+                        const areaPx = cv.contourArea(largestContour);
+                        const perimeterPx = cv.arcLength(largestContour, true);
+
+                        // Las métricas en píxeles siempre se calculan
+                        const minRect = cv.minAreaRect(largestContour);
+                        const size = minRect.size;
+                        let lengthPx = Math.max(size.width, size.height);
+                        let widthPx = Math.min(size.width, size.height);
+                        
+                        // Dibujar bounding box (amarillo)
+                        let vertices = cv.boxPoints(minRect);
+                        let corners = cv.matFromArray(4, 1, cv.CV_32FC2, [
+                            vertices.data32F[0], vertices.data32F[1],
+                            vertices.data32F[2], vertices.data32F[3],
+                            vertices.data32F[4], vertices.data32F[5],
+                            vertices.data32F[6], vertices.data32F[7]
+                        ]);
+                        cv.polylines(dst, [corners], true, [255, 255, 0, 255], 2, cv.LINE_AA);
+                        corners.delete();
+                        
+                        // Si la calibración fue exitosa, calculamos en cm
+                        if (calibrationSuccess && pixelsPerCm) {
+                            areaCm2 = `${(areaPx / (pixelsPerCm * pixelsPerCm)).toFixed(2)} cm²`;
+                            perimeterCm = `${(perimeterPx / pixelsPerCm).toFixed(2)} cm`;
+                            lengthCm = `${(lengthPx / pixelsPerCm).toFixed(2)} cm`;
+                            widthCm = `${(widthPx / pixelsPerCm).toFixed(2)} cm`;
+                        } else {
+                            // Si falla la calibración, mostramos en píxeles
+                            areaCm2 = `${areaPx.toFixed(0)} px²`;
+                            perimeterCm = `${perimeterPx.toFixed(2)} px`;
+                            lengthCm = `${lengthPx.toFixed(2)} px`;
+                            widthCm = `${widthPx.toFixed(2)} px`;
+                        }
+                    }
+                }
+                
+                // Dibujar cuadrado de referencia (verde)
+                if (referenceSquareContour) {
+                    cv.drawContours(dst, new cv.MatVector(referenceSquareContour), 0, [0, 255, 0, 255], 3);
+                }
+
+                cv.imshow(canvasOutput, dst);
+
+                const endTime = performance.now();
+                if (calculateMetrics) {
+                    elements.processingTime.textContent = `${(endTime - startTime).toFixed(2)} ms`;
+                }
+
+                return { areaCm2, perimeterCm, lengthCm, widthCm, calibrationSuccess };
+
+            } catch (e) {
+                if (calculateMetrics) {
+                    console.error("Error en CV:", e);
+                    showAlertModal("Error de procesamiento: " + e.message);
+                }
+                return null;
+            } finally {
+                // Liberar memoria de OpenCV
+                if (gray) gray.delete();
+                if (binary) binary.delete();
+                if (contours) contours.delete();
+                if (hierarchy) hierarchy.delete();
+                if (dst) dst.delete();
+            }
+        }
+
+        /**
+         * Función principal para medir la imagen final (activada por el botón)
+         */
+        function measureFinalImage() {
+            if (!cvReady) { showAlertModal("OpenCV.js aún no está cargado."); return; }
+            
+            let src = null;
+
+            // 1. Tomar foto si se está en streaming
+            if (streaming) {
+                const video = elements.webcamFeed;
+                const canvas = document.createElement('canvas');
+                canvas.width = video.videoWidth;
+                canvas.height = video.videoHeight;
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+                
+                // Detener la cámara y mostrar la imagen capturada
+                stopCamera();
+                elements.originalImage.src = canvas.toDataURL('image/jpeg');
+                elements.originalImage.classList.remove('hidden');
+                elements.webcamFeed.classList.add('hidden');
+                
+                src = cv.imread(elements.originalImage);
+
+            } else if (lastFrame) {
+                 // Si hay un frame capturado previamente (por ejemplo, después de detener la cámara)
+                 src = lastFrame.clone();
+            } else if (imageBase64) {
+                 // Si solo hay una imagen cargada
+                const imgElement = elements.originalImage;
+                src = cv.imread(imgElement);
+            } else {
+                showAlertModal("Por favor, cargue una imagen o inicie la cámara y capture una.");
+                return;
+            }
+
+            const realSideCm = parseFloat(elements.scaleCm.value);
+            
+            if (isNaN(realSideCm) || realSideCm <= 0) {
+                showAlertModal("Ingrese un valor de lado real (cm) válido (> 0) para la calibración.");
+                if (src) src.delete();
+                return;
+            }
+
+            // 2. Preparar canvas y procesar
+            initializeCanvas(src);
+            elements.canvasPlaceholder.classList.add('hidden');
+            elements.processedCanvas.classList.remove('hidden');
+            elements.fpsCounter.classList.add('hidden');
+
+            const result = processImage(src, elements.processedCanvas, true);
+
+            // 3. Mostrar resultados
+            if (result) {
+                elements.areaResult.textContent = result.areaCm2;
+                elements.perimeterResult.textContent = result.perimeterCm;
+                elements.lengthResult.textContent = result.lengthCm;
+                elements.widthResult.textContent = result.widthCm;
+            } else {
+                elements.areaResult.textContent = "N/A";
+                elements.perimeterResult.textContent = "N/A";
+                elements.lengthResult.textContent = "N/A";
+                elements.widthResult.textContent = "N/A";
+            }
+            
+            if (src) src.delete();
+        }
+        
+        // =======================================================
+        // CÁMARA Y STREAMING CV OPTIMIZADO
+        // =======================================================
+        
+        let videoCap = null;
+
+        /**
+         * Loop principal de procesamiento en tiempo real (OPTIMIZADO)
+         */
+        function processVideo() {
+            if (!streaming || !cvReady) {
+                // Asegurarse de limpiar recursos si el streaming se detiene
+                if (lastFrame) { lastFrame.delete(); lastFrame = null; }
+                return;
+            }
+
+            // Control de skip frames para optimizar rendimiento
+            const skipFramesValue = parseInt(elements.skipFrames.value);
+            frameCounter++;
+
+            if (frameCounter % skipFramesValue !== 0) {
+                updateFpsCounter();
+                requestAnimationFrame(processVideo);
+                return;
+            }
+
+            let src = new cv.Mat(elements.webcamFeed.videoHeight, elements.webcamFeed.videoWidth, cv.CV_8UC4);
+            
+            try {
+                videoCap.read(src);
+                initializeCanvas(src);
+                
+                // processImage ahora solo dibuja contornos en tiempo real
+                processImage(src, elements.processedCanvas, false); 
+                
+                if (lastFrame) lastFrame.delete();
+                lastFrame = src.clone(); // Clona para que el frame esté disponible para measureFinalImage
+                
+                updateFpsCounter();
+            } catch (e) {
+                console.error("Error en processVideo loop:", e);
+            } finally {
+                // Liberar el Mat de entrada si no se usó como lastFrame
+                if (src && (lastFrame !== src)) src.delete(); 
+            }
+            
+            requestAnimationFrame(processVideo);
+        }
+
+        /**
+         * Inicia el flujo de la cámara web con resolución optimizada
+         */
+        async function startCamera() {
+            if (!cvReady) {
+                showAlertModal("OpenCV.js aún no está cargado.");
+                return;
+            }
+
+            try {
+                // 1. Preparar la UI
+                elements.originalImage.classList.add('hidden');
+                elements.webcamFeed.classList.remove('hidden');
+                elements.placeholderText.classList.add('hidden');
+                elements.canvasPlaceholder.classList.add('hidden');
+                elements.processedCanvas.classList.remove('hidden');
+                elements.fpsCounter.classList.remove('hidden');
+
+                // 2. Configurar la resolución
+                const resolution = parseInt(elements.videoResolution.value);
+                const resolutionMap = {
+                    320: { width: { ideal: 320 }, height: { ideal: 240 } },
+                    480: { width: { ideal: 480 }, height: { ideal: 360 } },
+                    640: { width: { ideal: 640 }, height: { ideal: 480 } },
+                    1024: { width: { ideal: 1024 }, height: { ideal: 768 } }
+                };
+
+                // 3. Obtener el stream de la cámara (facingMode: "environment" para cámara trasera en móvil)
+                stream = await navigator.mediaDevices.getUserMedia({ 
+                    video: { 
+                        facingMode: "environment",
+                        ...resolutionMap[resolution]
+                    } 
+                });
+                
+                elements.webcamFeed.srcObject = stream;
+                
+                // 4. Inicializar VideoCapture de OpenCV una vez que los metadatos del video estén cargados
+                elements.webcamFeed.onloadedmetadata = () => {
+                    if (videoCap) videoCap.delete();
+                    videoCap = new cv.VideoCapture(elements.webcamFeed);
+                    
+                    streaming = true;
+                    frameCounter = 0;
+                    lastFpsTime = Date.now();
+                    requestAnimationFrame(processVideo); // Iniciar el loop de procesamiento
+                };
+
+                // 5. Actualizar botones
+                elements.btnCamera.classList.add('hidden');
+                elements.btnStopCamera.classList.remove('hidden');
+                elements.btnStopCamera.classList.add('visible');
+                elements.btnMeasure.disabled = false;
+                imageBase64 = null; // Limpiar imagen cargada
+
+            } catch (err) {
+                showAlertModal("Error al acceder a la cámara. Verifica permisos y conexión.");
+                console.error("Error: ", err);
+                stopCamera();
+            }
+        }
+
+        /**
+         * Detiene el flujo de la cámara web
+         */
+        function stopCamera() {
+            streaming = false;
+            if (stream) {
+                stream.getTracks().forEach(track => track.stop());
+                stream = null;
+            }
+            // NOTA: lastFrame NO se elimina aquí para que measureFinalImage pueda usar el último frame capturado.
+            if (videoCap) { videoCap.delete(); videoCap = null; }
+
+            elements.webcamFeed.classList.add('hidden');
+            elements.placeholderText.classList.remove('hidden');
+            elements.canvasPlaceholder.classList.remove('hidden');
+            elements.processedCanvas.classList.add('hidden');
+            elements.fpsCounter.classList.add('hidden');
+
+            elements.btnCamera.classList.remove('hidden');
+            elements.btnStopCamera.classList.add('hidden');
+            elements.btnStopCamera.classList.remove('visible');
+            elements.btnMeasure.disabled = true;
+        }
+
+        // =======================================================
+        // MANEJO DE IMAGEN CARGADA
+        // =======================================================
+
+        /**
+         * Carga una imagen del disco
+         */
+        function handleFile(event) {
+            stopCamera(); // Detener la cámara si está activa
+
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                imageBase64 = e.target.result;
+                displayImage(imageBase64);
+                elements.btnMeasure.disabled = false;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        /**
+         * Muestra la imagen cargada
+         */
+        function displayImage(base64Data) {
+            elements.placeholderText.classList.add('hidden');
+            elements.originalImage.src = base64Data;
+            elements.originalImage.classList.remove('hidden');
+
+            elements.processedCanvas.classList.add('hidden');
+            elements.canvasPlaceholder.classList.remove('hidden');
+            elements.fpsCounter.classList.add('hidden');
+
+            // Limpiar resultados anteriores
+            elements.areaResult.textContent = "N/A";
+            elements.perimeterResult.textContent = "N/A";
+            elements.lengthResult.textContent = "N/A";
+            elements.widthResult.textContent = "N/A";
+            elements.pixelCm.textContent = "N/A";
+            elements.processingTime.textContent = "N/A";
+            
+            elements.calibrationStatus.textContent = cvReady ? "Imagen cargada. Listo para medir." : "Cargando OpenCV.js...";
+            elements.calibrationStatus.classList.add('text-red-500');
+            
+            // Forzar el proceso en la imagen cargada inmediatamente para inicializar el canvas
+            const tempImg = new Image();
+            tempImg.onload = () => {
+                let src = cv.imread(tempImg);
+                initializeCanvas(src);
+                if(src) src.delete();
+            }
+            tempImg.src = base64Data;
+        }
+
+    </script>
+</body>
+</html>
+>>>>>>> 361396403b339c26f4e917be95ae5658540256d7
